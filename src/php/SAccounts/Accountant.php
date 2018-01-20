@@ -21,8 +21,6 @@ class Accountant
      * Error strings
      */
     const ERR1 = 'Chart id not set';
-    const ERR2 = 'Cannot file the Journal';
-    const ERR3 = 'Cannot file the Chart';
     /**@-*/
 
     /**
@@ -70,11 +68,11 @@ class Accountant
             ->chart(function ($tree, $chartName) {
                 return new Chart($chartName, $tree);
             })
-            ->build(function ($root, $tree, $chart) {
-                $this->buildTreeFromXml($tree, $root, $chart, AccountType::toArray());
+            ->build(function ($root, $tree) {
+                $this->buildTreeFromXml($tree, $root, AccountType::toArray());
             })
-            ->store(function ($chart) {
-                return $this->storeChart($chart);
+            ->store(function (Chart $chart, Node $tree) {
+                return $this->storeChart($chart->setRootNode($tree));
             })
             ->fyield('store');
 
@@ -92,11 +90,39 @@ class Accountant
      */
     public function fetchChart()
     {
-        if (isNull($this->chartId)) {
+        if (is_null($this->chartId)) {
             throw new AccountsException(self::ERR1);
         }
 
+        $chartId = $this->chartId->get();
+        $accounts = $this->dbAdapter
+            ->query(
+                "call sa_sp_get_tree('{$chartId}')",
+                Adapter::QUERY_MODE_EXECUTE
+            )
+            ->toArray();
+        $chartName = $this->dbAdapter
+            ->query(
+                "select name from sa_coa where id = {$chartId}",
+                Adapter::QUERY_MODE_EXECUTE)
+            ->current()
+            ->offsetGet('name');
+        $rootAc = array_shift($accounts);
+        $root = new Node(
+            new Account(
+                new Nominal($rootAc['nominal']),
+                AccountType::$rootAc['type'](),
+                new StringType($rootAc['name']),
+                new IntType($rootAc['acDr']),
+                new IntType($rootAc['acCr'])
+            )
+        );
 
+        $root = $this->buildTreeFromDb(
+            $root, $accounts, $rootAc['destid']
+        );
+
+        return new Chart(new StringType($chartName), $root, $this->chartId);
     }
 
     /**
@@ -121,14 +147,51 @@ class Accountant
     }
 
     /**
+     * Build chart tree from database records
+     *
+     * @param Node  $node
+     * @param array $accounts
+     * @param int   $origId
+     *
+     * @return Node
+     */
+    protected function buildTreeFromDb(
+        Node $node,
+        array $accounts,
+        $origId
+    ) {
+        $childAccounts = array_filter(
+            $accounts,
+            function ($account) use ($origId) {
+                return $account['origid'] == $origId;
+            }
+        );
+
+        foreach ($childAccounts as $childAccount) {
+            $childNode = new Node(
+                new Account(
+                    new Nominal($childAccount['nominal']),
+                    AccountType::$childAccount['type'](),
+                    new StringType($childAccount['name']),
+                    new IntType($childAccount['acDr']),
+                    new IntType($childAccount['acCr'])
+                )
+            );
+            $childNode = $this->buildTreeFromDb($childNode, $accounts, $childAccount['destid']);
+            $node->addChild($childNode);
+        }
+
+        return $node;
+    }
+
+    /**
      * Recursively build chart of account tree from XML
      *
      * @param Node $tree
      * @param \DOMNode $node
-     * @param Chart $chart
      * @param array $accountTypes
      */
-    protected function buildTreeFromXml(Node $tree, \DOMNode $node, Chart $chart, array $accountTypes)
+    protected function buildTreeFromXml(Node $tree, \DOMNode $node, array $accountTypes)
     {
         //create current node
         list($nominal, $type, $name) = FFor::create(
@@ -150,14 +213,14 @@ class Accountant
             })
             ->fyield('nominal', 'type', 'name');
 
-        $tree->setValue(new Account($chart, $nominal, $type, $name));
+        $tree->setValue(new Account($nominal, $type, $name, new IntType(0), new IntType(0)));
 
         //recurse through sub accounts
         foreach ($node->childNodes as $childNode) {
             if ($childNode instanceof \DOMElement) {
                 $childTree = new Node();
                 $tree->addChild($childTree);
-                $this->buildTreeFromXml($childTree, $childNode, $chart, $accountTypes);
+                $this->buildTreeFromXml($childTree, $childNode, $accountTypes);
             }
         }
     }

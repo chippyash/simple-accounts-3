@@ -11,6 +11,8 @@ namespace SAccounts\Visitor;
 use Tree\Visitor\Visitor;
 use Tree\Node\NodeInterface;
 use Tree\Node\Node;
+use SAccounts\Nominal;
+use SAccounts\Account;
 
 /**
  * Find an account node in the chart tree
@@ -27,7 +29,7 @@ class NodeFinder implements Visitor
      */
     public function __construct(Nominal $valueToFind)
     {
-        $this->valueToFind = $valueToFind;
+        $this->valueToFind = $valueToFind->get();
     }
 
     /**
@@ -38,7 +40,7 @@ class NodeFinder implements Visitor
     {
         $currAc = $node->getValue();
 
-        if ($currAc instanceof Account && $currAc->getNominal() == $this->valueToFind) {
+        if ($currAc instanceof Account && $currAc->getNominal()->get() == $this->valueToFind) {
             return $node;
         }
 

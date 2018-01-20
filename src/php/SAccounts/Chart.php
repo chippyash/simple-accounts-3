@@ -9,15 +9,12 @@
 
 namespace SAccounts;
 
-use Assembler\Assembler;
 use Chippyash\Type\Number\IntType;
 use Chippyash\Type\String\StringType;
 use Chippyash\Identity\Identifying;
 use Chippyash\Identity\Identifiable;
 use Monad\FTry;
-use Monad\FTry\Success;
 use Monad\Match;
-use Monad\Option;
 use Tree\Node\Node;
 use SAccounts\Visitor\NodeFinder;
 
@@ -31,9 +28,7 @@ class Chart implements Identifiable
     /**@+
      * Exception error messages
      */
-    const ERR_INVALAC = 'Invalid account identifier';
-    const ERR_ACEXISTS = 'Account already exists in chart';
-    const ERR_NODELETE = 'Cannot delete account: Balance not zero';
+    const ERR_INVALAC = 'Invalid account nominal identifier';
     /**@-*/
 
     /**
@@ -76,26 +71,26 @@ class Chart implements Identifiable
      *
      * @return $this
      */
-    public function addAccount(Account $account, Nominal $parent = null)
-    {
-        Match::on($this->tryHasNode($account->getNominal(), self::ERR_ACEXISTS))
-            ->Monad_FTry_Success(
-                Success::create(
-                    Match::on($parent)
-                        ->SAccounts_Nominal(function ($p) {
-                            return $this->findNode($p);
-                        })
-                        ->null($this->tree)
-                        ->value()
-                )
-            )
-            ->value()
-            ->pass()
-            ->value()
-            ->addChild(new Node($account));
-
-        return $this;
-    }
+//    public function addAccount(Account $account, Nominal $parent = null)
+//    {
+//        Match::on($this->tryHasNode($account->getNominal(), self::ERR_ACEXISTS))
+//            ->Monad_FTry_Success(
+//                Success::create(
+//                    Match::on($parent)
+//                        ->SAccounts_Nominal(function ($p) {
+//                            return $this->findNode($p);
+//                        })
+//                        ->null($this->tree)
+//                        ->value()
+//                )
+//            )
+//            ->value()
+//            ->pass()
+//            ->value()
+//            ->addChild(new Node($account));
+//
+//        return $this;
+//    }
 
     /**
      * Delete an account
@@ -104,39 +99,39 @@ class Chart implements Identifiable
      *
      * @return $this
      */
-    public function delAccount(Nominal $nId)
-    {
-        Assembler::create()
-            ->accnt(function () use ($nId){
-                return $this->tryGetNode($nId, self::ERR_INVALAC)
-                    ->pass()
-                    ->flatten();
-            })
-            ->account( function ($accnt) {
-                return FTry::with(function () use ($accnt) {
-                    $account = $accnt->getValue();
-                    if ($account->getBalance()->get() !== 0) {
-                        throw new AccountsException(self::ERR_NODELETE);
-                    }
-                    return $account;
-                })
-                    ->pass()
-                    ->flatten();
-            })
-            ->transact(function ($account) {
-                Match::on(Option::create(
-                    (($account->getType()->getValue() & AccountType::DR) == AccountType::DR), false)
-                )
-                    ->Monad_Option_Some($account->debit($account->getDebit()->negate()))
-                    ->Monad_Option_None($account->credit($account->getCredit()->negate()));
-            })
-            ->removeChild(function ($accnt) {
-                $accnt->getParent()->removeChild($accnt);
-            })
-            ->assemble();
-
-        return $this;
-    }
+//    public function delAccount(Nominal $nId)
+//    {
+//        Assembler::create()
+//            ->accnt(function () use ($nId){
+//                return $this->tryGetNode($nId, self::ERR_INVALAC)
+//                    ->pass()
+//                    ->flatten();
+//            })
+//            ->account( function ($accnt) {
+//                return FTry::with(function () use ($accnt) {
+//                    $account = $accnt->getValue();
+//                    if ($account->getBalance()->get() !== 0) {
+//                        throw new AccountsException(self::ERR_NODELETE);
+//                    }
+//                    return $account;
+//                })
+//                    ->pass()
+//                    ->flatten();
+//            })
+//            ->transact(function ($account) {
+//                Match::on(Option::create(
+//                    (($account->getType()->getValue() & AccountType::DR) == AccountType::DR), false)
+//                )
+//                    ->Monad_Option_Some($account->debit($account->getDebit()->negate()))
+//                    ->Monad_Option_None($account->credit($account->getCredit()->negate()));
+//            })
+//            ->removeChild(function ($accnt) {
+//                $accnt->getParent()->removeChild($accnt);
+//            })
+//            ->assemble();
+//
+//        return $this;
+//    }
 
     /**
      * Get an account from the chart
@@ -200,16 +195,6 @@ class Chart implements Identifiable
     }
 
     /**
-     * Return organisation that owns this chart
-     *
-     * @return Organisation
-     */
-    public function getOrg()
-    {
-        return $this->org;
-    }
-
-    /**
      * Return account tree
      *
      * @return Node
@@ -249,14 +234,14 @@ class Chart implements Identifiable
      *
      * @return FTry
      */
-    protected function tryHasNode(Nominal $nId, $exceptionMessage)
-    {
-        return FTry::with(function () use ($nId, $exceptionMessage) {
-            if (!is_null($this->findNode($nId))) {
-                throw new AccountsException($exceptionMessage);
-            }
-        });
-    }
+//    protected function tryHasNode(Nominal $nId, $exceptionMessage)
+//    {
+//        return FTry::with(function () use ($nId, $exceptionMessage) {
+//            if (!is_null($this->findNode($nId))) {
+//                throw new AccountsException($exceptionMessage);
+//            }
+//        });
+//    }
 
     /**
      * @param Nominal $nId

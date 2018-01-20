@@ -20,14 +20,6 @@ use Monad\Option;
  */
 class Account
 {
-
-    /**
-     * Chart that this account belongs to
-     *
-     * @var Chart
-     */
-    protected $chart;
-
     /**
      * Account Id
      *
@@ -66,61 +58,24 @@ class Account
     /**
      * Account constructor.
      *
-     * @param Chart             $chart
      * @param Nominal           $nominal
      * @param AccountType       $type
      * @param StringType        $name
+     * @param IntType           $dr
+     * @param IntType           $cr
      */
     public function __construct(
-        Chart $chart,
         Nominal $nominal,
         AccountType $type,
-        StringType $name
+        StringType $name,
+        IntType $dr,
+        IntType $cr
     ) {
-        $this->chart = $chart;
         $this->nominal = $nominal;
         $this->type= $type;
         $this->name = $name;
-        $this->acDr = new IntType(0);
-        $this->acCr = new IntType(0);
-    }
-
-    /**
-     * Add to debit amount for this account
-     * Will update parent account if required
-     *
-     * @param IntType $amount
-     *
-     * @return $this
-     */
-    public function debit(IntType $amount)
-    {
-        $this->acDr->set($this->acDr->get() + $amount());
-        Match::on($this->optGetParentId())
-            ->Monad_Option_Some(function($parentId) use($amount) {
-                $this->chart->getAccount($parentId->value())->debit($amount);
-            });
-
-        return $this;
-    }
-
-    /**
-     * Add to credit amount for this account
-     * Will update parent account if required
-     *
-     * @param IntType $amount
-     *
-     * @return $this
-     */
-    public function credit(IntType $amount)
-    {
-        $this->acCr->set($this->acCr->get() + $amount());
-        Match::on($this->optGetParentId())
-            ->Monad_Option_Some(function($parentId) use($amount) {
-                $this->chart->getAccount($parentId->value())->credit($amount);
-            });
-
-        return $this;
+        $this->acDr = $dr;
+        $this->acCr = $cr;
     }
 
     /**
@@ -128,7 +83,7 @@ class Account
      *
      * @return IntType
      */
-    public function getDebit()
+    public function dr()
     {
         return $this->acDr;
     }
@@ -138,7 +93,7 @@ class Account
      *
      * @return IntType
      */
-    public function getCredit()
+    public function cr()
     {
         return $this->acCr;
     }
@@ -184,38 +139,5 @@ class Account
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * Return Chart that this account belongs to
-     *
-     * @return Chart
-     */
-    public function getChart()
-    {
-        return $this->chart;
-    }
-
-    /**
-     * Get parent nominal id as an Option
-     *
-     * @return Option
-     */
-    protected function optGetParentId()
-    {
-        return Match::on(
-            FTry::with(
-                function () {
-                    return $this->chart->getParentId($this->nominal);
-                }
-            )
-        )
-            ->Monad_FTry_Success(function ($id) {
-                return Option::create($id->flatten());
-            })
-            ->Monad_FTry_Failure(function () {
-                return Option::create(null);
-            })
-            ->value();
     }
 }

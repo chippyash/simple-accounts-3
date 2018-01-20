@@ -38,7 +38,7 @@ testSuiteLoaderFile="/path/to/StandardTestSuiteLoader.php"
      !-->
     <filter>
         <whitelist processUncoveredFilesFromWhitelist="true">
-            <directory suffix=".php">./SAccounts</directory>
+            <directory suffix=".php">../../src/php/SAccounts</directory>
             <exclude>
             </exclude>
         </whitelist>

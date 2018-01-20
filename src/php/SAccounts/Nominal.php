@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Double Entry Accounting
+ * Simple Double Entry Accounting V2
  *
  * @author Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
@@ -11,6 +11,6 @@ namespace SAccounts;
 use Chippyash\Type\String\DigitType;
 
 /**
- * An Account Nominal code or Id
+ * An Account Nominal code
  */
 class Nominal extends DigitType {}
