@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Double Entry Accounting V2
+ * Simple Double Entry Accounting V3
  
  * @author Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
@@ -34,7 +34,8 @@ class NodeFinder implements Visitor
 
     /**
      * @param NodeInterface $node
-     * @return Node|null
+     *
+     * @return NodeInterface|null
      */
     public function visit(NodeInterface $node)
     {

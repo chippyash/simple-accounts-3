@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Double Entry Accounting V2
+ * Simple Double Entry Accounting V3
  *
  * @author Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
@@ -10,9 +10,6 @@ namespace SAccounts;
 
 use Chippyash\Type\Number\IntType;
 use Chippyash\Type\String\StringType;
-use Monad\FTry;
-use Monad\Match;
-use Monad\Option;
 
 /**
  * An Account

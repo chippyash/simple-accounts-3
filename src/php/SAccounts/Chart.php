@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Double Entry Accounting V2
+ * Simple Double Entry Accounting V3
  *
  * @author Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
@@ -62,76 +62,6 @@ class Chart implements Identifiable
             ->value();
         $this->id = $internalId;
     }
-
-    /**
-     * Add an account
-     *
-     * @param Account $account Account to add
-     * @param Nominal $parent Optional id of account parent
-     *
-     * @return $this
-     */
-//    public function addAccount(Account $account, Nominal $parent = null)
-//    {
-//        Match::on($this->tryHasNode($account->getNominal(), self::ERR_ACEXISTS))
-//            ->Monad_FTry_Success(
-//                Success::create(
-//                    Match::on($parent)
-//                        ->SAccounts_Nominal(function ($p) {
-//                            return $this->findNode($p);
-//                        })
-//                        ->null($this->tree)
-//                        ->value()
-//                )
-//            )
-//            ->value()
-//            ->pass()
-//            ->value()
-//            ->addChild(new Node($account));
-//
-//        return $this;
-//    }
-
-    /**
-     * Delete an account
-     *
-     * @param Nominal $nId Id of account
-     *
-     * @return $this
-     */
-//    public function delAccount(Nominal $nId)
-//    {
-//        Assembler::create()
-//            ->accnt(function () use ($nId){
-//                return $this->tryGetNode($nId, self::ERR_INVALAC)
-//                    ->pass()
-//                    ->flatten();
-//            })
-//            ->account( function ($accnt) {
-//                return FTry::with(function () use ($accnt) {
-//                    $account = $accnt->getValue();
-//                    if ($account->getBalance()->get() !== 0) {
-//                        throw new AccountsException(self::ERR_NODELETE);
-//                    }
-//                    return $account;
-//                })
-//                    ->pass()
-//                    ->flatten();
-//            })
-//            ->transact(function ($account) {
-//                Match::on(Option::create(
-//                    (($account->getType()->getValue() & AccountType::DR) == AccountType::DR), false)
-//                )
-//                    ->Monad_Option_Some($account->debit($account->getDebit()->negate()))
-//                    ->Monad_Option_None($account->credit($account->getCredit()->negate()));
-//            })
-//            ->removeChild(function ($accnt) {
-//                $accnt->getParent()->removeChild($accnt);
-//            })
-//            ->assemble();
-//
-//        return $this;
-//    }
 
     /**
      * Get an account from the chart
@@ -227,21 +157,6 @@ class Chart implements Identifiable
 
         return $this;
     }
-
-    /**
-     * @param Nominal $nId
-     * @param $exceptionMessage
-     *
-     * @return FTry
-     */
-//    protected function tryHasNode(Nominal $nId, $exceptionMessage)
-//    {
-//        return FTry::with(function () use ($nId, $exceptionMessage) {
-//            if (!is_null($this->findNode($nId))) {
-//                throw new AccountsException($exceptionMessage);
-//            }
-//        });
-//    }
 
     /**
      * @param Nominal $nId

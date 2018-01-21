@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Double Entry Bookkeeping V2
+ * Simple Double Entry Bookkeeping V3
  *
  * @author Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
@@ -50,7 +50,7 @@ class Accountant
     }
 
     /**
-     * Create a new Chart from a definition and staore it in the database
+     * Create a new Chart from a definition and store it in the database
      *
      * @param StringType $chartName This needs to be unique
      * @param ChartDefinition $def
@@ -131,6 +131,7 @@ class Accountant
      * Write a Transaction to the Journal and update the Chart
      *
      * @param SplitTransaction $txn
+     * @param \DateTime|null $dateTime
      *
      * @return IntType Transaction Id
      * @throws AccountsException

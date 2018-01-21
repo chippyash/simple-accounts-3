@@ -1,10 +1,10 @@
 <?php
 /**
- * Simple Double Entry Accounting
+ * Simple Double Entry Bookkeeping V3
  *
- * @copyright  	Ashley Kitson, 2018, UK
- * @author 		Ashley Kitson
- * @license		GPL V3+ See LICENSE.md
+ * @author Ashley Kitson
+ * @copyright Ashley Kitson, 2018, UK
+ * @license GPL V3+ See LICENSE.md
  */
 namespace SAccounts;
 

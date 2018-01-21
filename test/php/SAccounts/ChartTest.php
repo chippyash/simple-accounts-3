@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Double Entry Accounting V2
+ * Simple Double Entry Accounting V3
  *
  * @author Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK

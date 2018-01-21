@@ -3,34 +3,80 @@
         xsi:noNamespaceSchemaLocation="../xsd/chart-definition.xsd"
         name="Personal">
     <account nominal="0000" type="real" name="COA">
-        <account nominal="1000" type="real" name="Balance Sheet">
-            <account nominal="2000" type="asset" name="Assets">
-                <account nominal="2100" type="bank" name="At Bank">
-                    <account nominal="2110" type="bank" name="Current Account"/>
-                    <account nominal="2120" type="bank" name="Savings Account"/>
+        <account nominal="0001" type="real" name="Balance Sheet">
+            <account nominal="1000" type="asset" name="Assets">
+                <account nominal="1100" type="asset" name="Current Assets">
+                    <account nominal="1200" type="bank" name="At Bank">
+                        <account nominal="1210" type="bank" name="Current Accounts"/>
+                        <account nominal="1220" type="bank" name="Savings Accounts"/>
+                    </account>
+                    <account nominal="1300" type="asset" name="Shares"/>
+                    <account nominal="1400" type="asset" name="Bonds"/>
+                </account>
+                <account nominal="1500" type="asset" name="Fixed Assets">
+                    <account nominal="1600" type="asset" name="Property"/>
+                    <account nominal="1700" type="asset" name="Vehicles"/>
+                    <account nominal="1800" type="asset" name="Equipment"/>
                 </account>
             </account>
-            <account nominal="3000" type="liability" name="Liabilities">
-                <account nominal="3100" type="equity" name="Equity">
-                    <account nominal="3110" type="equity" name="Opening Balance"/>
-                </account>
-                <account nominal="3200" type="liability" name="Loans">
-                    <account nominal="3210" type="liability" name="Mortgage"/>
-                </account>
+            <account nominal="2000" type="liability" name="Liabilities">
+                <account nominal="2100" type="liability" name="Mortgages"/>
+                <account nominal="2200" type="liability" name="Loans"/>
+            </account>
+            <account nominal="3000" type="equity" name="Equity">
+                <account nominal="3100" type="equity" name="Opening Balance"/>
             </account>
         </account>
-        <account nominal="5000" type="real" name="Profit And Loss">
-            <account nominal="6000" type="income" name="Income">
-                <account nominal="6100" type="income" name="Salary"/>
-                <account nominal="6200" type="income" name="Interest Received"/>
+        <account nominal="0002" type="real" name="Profit And Loss">
+            <account nominal="4000" type="income" name="Income">
+                <account nominal="4100" type="income" name="Salary &amp; Wages"/>
+                <account nominal="4200" type="income" name="Misc paid work"/>
             </account>
-            <account nominal="7000" type="expense" name="Expenses">
-                <account nominal="7100" type="expense" name="House"/>
-                <account nominal="7200" type="expense" name="Travel"/>
-                <account nominal="7300" type="expense" name="Insurance"/>
-                <account nominal="7400" type="expense" name="Food"/>
-                <account nominal="7500" type="expense" name="Leisure"/>
-                <account nominal="7600" type="expense" name="Interest Payments"/>
+            <account nominal="6000" type="expense" name="Expenses">
+                <account nominal="6100" type="expense" name="House">
+                    <account nominal="6110" type="expense" name="Repairs"/>
+                    <account nominal="6120" type="expense" name="Garden">
+                        <account nominal="6121" type="expense" name="Gardener"/>
+                        <account nominal="6122" type="expense" name="Plants"/>
+                        <account nominal="6123" type="expense" name="Consumables"/>
+                    </account>
+                    <account nominal="6130" type="expense" name="Services">
+                        <account nominal="6131" type="expense" name="Window Cleaner"/>
+                        <account nominal="6132" type="expense" name="Laundry"/>
+                    </account>
+                    <account nominal="6140" type="expense" name="Property Tax"/>
+                </account>
+                <account nominal="6200" type="expense" name="Travel">
+                </account>
+                <account nominal="6300" type="expense" name="Insurance">
+                    <account nominal="6310" type="expense" name="Buildings Insurance"/>
+                    <account nominal="6320" type="expense" name="Contents Insurance"/>
+                    <account nominal="6330" type="expense" name="Health Insurance"/>
+                    <account nominal="6340" type="expense" name="Travel Insurance"/>
+                </account>
+                <account nominal="6400" type="expense" name="Food"/>
+                <account nominal="6500" type="expense" name="Leisure">
+                    <account nominal="6510" type="expense" name="Holidays"/>
+                    <account nominal="6520" type="expense" name="Memberships"/>
+                    <account nominal="6530" type="expense" name="Events"/>
+                </account>
+                <account nominal="6600" type="expense" name="Utilities">
+                    <account nominal="6610" type="expense" name="Gas"/>
+                    <account nominal="6620" type="expense" name="Electricity"/>
+                    <account nominal="6630" type="expense" name="Water"/>
+                    <account nominal="6640" type="expense" name="Telephone"/>
+                    <account nominal="6650" type="expense" name="Internet"/>
+                </account>
+                <account nominal="6700" type="expense" name="Interest">
+                    <account nominal="6710" type="expense" name="Mortgage Interest"/>
+                    <account nominal="6720" type="expense" name="Loan Interest"/>
+                </account>
+            </account>
+            <account nominal="7000" type="income" name="Other Income">
+                <account nominal="7100" type="income" name="Interest Received"/>
+            </account>
+            <account nominal="8000" type="expense" name="Other Expenses">
+                <account nominal="8100" type="expense" name="Interest Payments"/>
             </account>
         </account>
     </account>

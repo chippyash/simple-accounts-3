@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Double Entry Accounting V2
+ * Simple Double Entry Accounting V3
  *
  * @author Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
@@ -69,7 +69,7 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
      * @expectedException \SAccounts\AccountsException
      * @expectedExceptionMessage Chart id not set
      */
-    public function testFetchingAChartWhenCahrtIdIsNotSetWillThrowAnException()
+    public function testFetchingAChartWhenChartIdIsNotSetWillThrowAnException()
     {
         $this->sut->fetchChart();
     }
@@ -154,6 +154,19 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
             1226,
             $chart->getAccount(new Nominal('0000'))->cr()->get()
         );
+    }
+
+    /**
+     * @expectedException \SAccounts\AccountsException
+     * @expectedExceptionMessage Chart id not set
+     */
+    public function testWritingATransactionWhenChartIdIsNotSetWillThrowAnException()
+    {
+        $txn = new SplitTransaction(new StringType('test'), new IntType(10));
+        $txn->addEntry(new Entry(new Nominal('7100'),new IntType(1226), AccountType::DR()))
+            ->addEntry(new Entry(new Nominal('2110'),new IntType(1226), AccountType::CR()));
+
+        $this->sut->writeTransaction($txn);
     }
 
     public function testYouCanFetchAJournalTransactionByItsId()

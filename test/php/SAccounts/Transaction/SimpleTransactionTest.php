@@ -1,12 +1,11 @@
 <?php
 /**
- * Accounts
+ * Simple Double Entry Bookkeeping V3
  *
  * @author Ashley Kitson
- * @copyright Ashley Kitson, 2015, UK
+ * @copyright Ashley Kitson, 2018, UK
  * @license GPL V3+ See LICENSE.md
  */
-
 namespace Chippyash\Test\SAccounts\Transaction;
 
 use Chippyash\Currency\Factory;

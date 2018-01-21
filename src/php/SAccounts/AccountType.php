@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Double Entry Accounting V2
+ * Simple Double Entry Accounting V3
 
  * @author Ashley Kitson
  * @copyright Ashley Kitson, 2015, UK
@@ -9,7 +9,6 @@
 
 namespace SAccounts;
 
-use Chippyash\Currency\Currency;
 use Chippyash\Type\Number\IntType;
 use Chippyash\Type\String\StringType;
 use MyCLabs\Enum\Enum;

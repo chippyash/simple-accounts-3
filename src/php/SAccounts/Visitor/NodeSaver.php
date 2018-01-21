@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Double Entry Accounting V2
+ * Simple Double Entry Accounting V3
  
  * @author Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
@@ -11,9 +11,7 @@ namespace SAccounts\Visitor;
 use Chippyash\Type\Number\IntType;
 use Tree\Visitor\Visitor;
 use Tree\Node\NodeInterface;
-use Tree\Node\Node;
 use Zend\Db\Adapter\Adapter;
-use SAccounts\Nominal;
 use SAccounts\Account;
 
 /**
@@ -39,7 +37,8 @@ class NodeSaver implements Visitor
 
     /**
      * @param NodeInterface $node
-     * @return Node|null
+     *
+     * @return Account|null
      */
     public function visit(NodeInterface $node)
     {

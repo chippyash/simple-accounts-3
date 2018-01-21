@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Double Entry Bookkeeping V2
+ * Simple Double Entry Bookkeeping V3
  *
  * @author Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
@@ -8,7 +8,6 @@
  */
 namespace SAccounts\Transaction;
 
-use Chippyash\Currency\Currency;
 use Chippyash\Type\Number\IntType;
 use Monad\FTry;
 use Monad\Match;

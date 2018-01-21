@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Double Entry Bookkeeping V2
+ * Simple Double Entry Bookkeeping V3
  *
  * @author Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
@@ -42,7 +42,7 @@ class EntriesTest extends \PHPUnit_Framework_TestCase
      * @expectedException \RuntimeException
      * @expectedExceptionMessage Value 0 is not a SAccounts\Transaction\Entry
      */
-    public function testTouCannotCreateAnEntriesCollectionWithNonEntryValues()
+    public function testYouCannotCreateAnEntriesCollectionWithNonEntryValues()
     {
         new Entries(array(new \stdClass()));
     }

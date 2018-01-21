@@ -1,6 +1,6 @@
 <?php
 /**
- * Simple Double Entry Accounting 2
+ * Simple Double Entry Bookkeeping V3
  *
  * @author Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
@@ -45,7 +45,7 @@ class ChartDefinition
     public function getDefinition()
     {
         $err = '';
-        set_error_handler(function($number, $error) use ($err) {
+        set_error_handler(function($number, $error) use (&$err) {
             $err = $error;
             if (preg_match('/^DOMDocument::load\(\): (.+)$/', $error, $m) === 1) {
                 throw new AccountsException($m[1]);
