@@ -3,7 +3,7 @@
         xsi:noNamespaceSchemaLocation="../xsd/chart-definition.xsd"
         name="Personal">
     <account nominal="0000" type="real" name="COA">
-        <account nominal="0001" type="real" name="Balance Sheet">
+        <account nominal="0001" type="dr" name="Balance Sheet">
             <account nominal="1000" type="asset" name="Assets">
                 <account nominal="1100" type="asset" name="Current Assets">
                     <account nominal="1200" type="bank" name="At Bank">
@@ -27,7 +27,7 @@
                 <account nominal="3100" type="equity" name="Opening Balance"/>
             </account>
         </account>
-        <account nominal="0002" type="real" name="Profit And Loss">
+        <account nominal="0002" type="cr" name="Profit And Loss">
             <account nominal="4000" type="income" name="Income">
                 <account nominal="4100" type="income" name="Salary &amp; Wages"/>
                 <account nominal="4200" type="income" name="Misc paid work"/>

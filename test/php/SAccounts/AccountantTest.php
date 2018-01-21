@@ -15,6 +15,7 @@ use Chippyash\Type\String\StringType;
 use SAccounts\AccountType;
 use SAccounts\Nominal;
 use SAccounts\Transaction\Entry;
+use SAccounts\Transaction\SimpleTransaction;
 use SAccounts\Transaction\SplitTransaction;
 use Zend\Db\Adapter\Adapter;
 
@@ -195,6 +196,71 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('2110', $crAc->getId()->get());
         $this->assertEquals(1226, $crAc->getAmount()->get());
         $this->assertTrue($crAc->getType()->equals(AccountType::CR()));
+    }
+
+    public function testYouCanAddAnAccountToAChart()
+    {
+        $this->createChart();
+        $nominal = new Nominal('7700');
+        $prntNominal = new Nominal(('7000'));
+        $chartBefore = $this->sut->fetchChart();
+
+        $this->sut->addAccount($nominal, AccountType::EXPENSE(), new StringType('foo'), $prntNominal);
+        $chartAfter = $this->sut->fetchChart();
+
+        $this->assertFalse($chartBefore->hasAccount($nominal));
+        $this->assertTrue($chartAfter->hasAccount($nominal));
+    }
+
+    /**
+     * @expectedException  \SAccounts\DbException
+     * @expectedExceptionMessage Invalid parent account nominal
+     */
+    public function testAddingAnAccountToANonExistentParentWillThrowAnException()
+    {
+        $this->createChart();
+        $nominal = new Nominal('7700');
+        $prntNominal = new Nominal(('9999'));
+
+        $this->sut->addAccount($nominal, AccountType::EXPENSE(), new StringType('foo'), $prntNominal);
+
+    }
+
+    /**
+     * @expectedException  \SAccounts\DbException
+     * @expectedExceptionMessage Chart already has root account
+     */
+    public function testTryingToAddASecondRootAccountWillThrowAnException()
+    {
+        $this->createChart();
+        $nominal = new Nominal(('9999'));
+
+        $this->sut->addAccount($nominal, AccountType::EXPENSE(), new StringType('foo'));
+    }
+
+    public function testYouCanDeleteAZeroBalanceAccount()
+    {
+        $this->createChart();
+        $nominal = new Nominal('3000');
+        $chartBefore = $this->sut->fetchChart();
+        $this->sut->delAccount($nominal);
+        $chartAfter = $this->sut->fetchChart();
+
+        $this->assertTrue($chartBefore->hasAccount($nominal));
+        $this->assertFalse($chartAfter->hasAccount($nominal));
+    }
+
+    /**
+     * @expectedException  \SAccounts\DbException
+     * @expectedExceptionMessage Account balance is non zero
+     */
+    public function testDeletingANonZeroBalanceAccountWillThrowAnException()
+    {
+        $this->createChart();
+        $nominal = new Nominal('3000');
+        $txn = new SimpleTransaction(new Nominal('2110'), new Nominal('3100'),new IntType(1226));
+        $this->sut->writeTransaction($txn);
+        $this->sut->delAccount($nominal);
     }
 
     protected function createChart()

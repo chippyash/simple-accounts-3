@@ -18,7 +18,7 @@ CREATE DEFINER = CURRENT_USER FUNCTION
 DROP PROCEDURE IF EXISTS sa_sp_add_ledger;
 CREATE DEFINER = CURRENT_USER PROCEDURE
   sa_sp_add_ledger(
-    chartId INT(10) UNSIGNED,
+    chartInternalId INT(10) UNSIGNED,
     nominal VARCHAR(10),
     type VARCHAR(10),
     name VARCHAR(30),
@@ -27,16 +27,32 @@ CREATE DEFINER = CURRENT_USER PROCEDURE
   MODIFIES SQL DATA
   BEGIN
     DECLARE prntId INT(10) UNSIGNED;
+    DECLARE cntPrnts INT;
+
+    # check to see if we already have a root account
+    IF (prntNominal = '') THEN
+      SELECT count(id) FROM sa_coa_ledger l
+        WHERE l.prntId = 0
+        AND l.chartId = chartInternalId
+      INTO cntPrnts;
+      IF (cntPrnts > 0) THEN
+        SIGNAL SQLSTATE '45000' SET MYSQL_ERRNO = 1859, MESSAGE_TEXT = _utf8'Chart already has root account';
+      END IF;
+    END IF;
+
     SET prntId = 0;
     IF (prntNominal != '') THEN
         SELECT id from sa_coa_ledger l
           WHERE l.nominal = prntNominal
-          AND l.chartId = chartId
+          AND l.chartId = chartInternalId
           INTO prntId;
+        IF (prntId = 0) THEN
+          SIGNAL SQLSTATE '45000' SET MYSQL_ERRNO = 1107, MESSAGE_TEXT = _utf8'Invalid parent account nominal';
+        END IF;
     END IF;
 
     INSERT INTO sa_coa_ledger (`prntId`, `chartId`, `nominal`, `type`, `name`)
-      VALUES (prntId, chartId, nominal, type, name);
+      VALUES (prntId, chartInternalId, nominal, type, name);
   END;
 //
 DROP PROCEDURE IF EXISTS sa_sp_del_ledger;
@@ -48,10 +64,15 @@ CREATE DEFINER = CURRENT_USER PROCEDURE
 MODIFIES SQL DATA
   BEGIN
     DECLARE accId INT(10) UNSIGNED;
-    SELECT id FROM sa_coa_ledger l
+    DECLARE accDr INT(10) UNSIGNED;
+    DECLARE accCr INT(10) UNSIGNED;
+    SELECT id, acDr, acCr FROM sa_coa_ledger l
       WHERE l.nominal = nominal
       AND l.chartId = chartId
-      INTO accId;
+      INTO accId, accDr, accCr;
+    IF (accDr > 0 OR accCr > 0) THEN
+      SIGNAL SQLSTATE '45000' SET MYSQL_ERRNO = 2000, MESSAGE_TEXT = _utf8'Account balance is non zero';
+    END IF;
 
     DELETE FROM sa_coa_ledger
       WHERE prntId = accId;
@@ -126,3 +147,4 @@ READS SQL DATA
   END;
 //
 DELIMITER ;
+

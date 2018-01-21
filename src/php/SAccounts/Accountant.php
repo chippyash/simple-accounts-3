@@ -10,12 +10,14 @@ namespace SAccounts;
 
 use Chippyash\Type\Number\IntType;
 use Chippyash\Type\String\StringType;
+use PDOException;
 use Zend\Db\Adapter\Adapter;
 use Assembler\FFor;
 use Tree\Node\Node;
 use SAccounts\Visitor\NodeSaver;
 use SAccounts\Transaction\SplitTransaction;
 use SAccounts\Transaction\Entry;
+use Zend\Db\Adapter\Exception\InvalidQueryException;
 
 class Accountant
 {
@@ -222,6 +224,67 @@ class Accountant
 
         return $txn;
     }
+
+    /**
+     * Add an account (ledger) to the chart
+     *
+     * Exceptions thrown if parent doesn't exist or you try to add a second
+     * root account
+     *
+     * @param Nominal      $nominal
+     * @param AccountType  $type
+     * @param StringType   $name
+     * @param Nominal|null $prntNominal
+     *
+     * @throws DbException
+     */
+    public function addAccount(
+        Nominal $nominal,
+        AccountType $type,
+        StringType $name,
+        Nominal $prntNominal = null
+    ) {
+        try {
+            $this->dbAdapter->query('call sa_sp_add_ledger(?, ?, ?, ?, ?)')
+                ->execute(
+                    [
+                        $this->chartId->get(),
+                        $nominal(),
+                        $type->getKey(),
+                        $name(),
+                        is_null($prntNominal) ? '' : $prntNominal()
+                    ]
+                );
+        } catch (InvalidQueryException $e) {
+            throw new DbException($e);
+        } catch (PDOException $e) {
+            throw new DbException($e);
+        }
+    }
+
+    /**
+     * Delete an account (ledger) and all its child accounts
+     * Exception thrown if the account has non zero debit or credit amounts
+     *
+     * @param Nominal $nominal
+     *
+     * @throws DbException
+     */
+    public function delAccount(Nominal $nominal)
+    {
+        try {
+            $this->dbAdapter->query('call sa_sp_del_ledger(?, ?)')
+                ->execute(
+                    [
+                        $this->chartId->get(),
+                        $nominal()
+                    ]
+                );
+        } catch (InvalidQueryException $e) {
+            throw new DbException($e);
+        }
+    }
+
 
     /**
      * Build chart tree from database records
