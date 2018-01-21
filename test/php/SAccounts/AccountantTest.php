@@ -9,8 +9,13 @@
 
 namespace Test\SAccounts;
 
+use Chippyash\Type\Number\IntType;
 use SAccounts\Accountant;
 use Chippyash\Type\String\StringType;
+use SAccounts\AccountType;
+use SAccounts\Nominal;
+use SAccounts\Transaction\Entry;
+use SAccounts\Transaction\SplitTransaction;
 use Zend\Db\Adapter\Adapter;
 
 
@@ -68,23 +73,116 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
     {
         $this->sut->fetchChart();
     }
-//
-//    public function testYouCanWriteATransactionToAJournalAndUpdateAChart()
-//    {
-//        $chart = new Chart(new StringType('foo bar'), new Organisation(new IntType(1), new StringType('Foo Org'), CurrencyFactory::create('gbp')));
-//        $chart->addAccount(new Account($chart, new Nominal('0000'),AccountType::DR(), new StringType('Foo')));
-//        $chart->addAccount(new Account($chart, new Nominal('0001'),AccountType::CR(), new StringType('Bar')));
-//        $journal = new Journal(new StringType('Foo Journal'), CurrencyFactory::create('gbp'), $this->journalist);
-//        $txn = new Transaction(new Nominal('0000'), new Nominal('0001'), CurrencyFactory::create('gbp', 12.26));
-//        $this->journalist->expects($this->once())
-//            ->method('writeTransaction')
-//            ->will($this->returnValue(new IntType(1)));
-//
-//        $returnedTransaction = $this->sut->writeTransaction($txn, $chart, $journal);
-//        $this->assertEquals(1, $returnedTransaction->getId()->get());
-//        $this->assertEquals(1226, $chart->getAccount(new Nominal('0000'))->getDebit()->get());
-//        $this->assertEquals(1226, $chart->getAccount(new Nominal('0001'))->getCredit()->get());
-//    }
+
+    public function testYouCanWriteATransactionToAJournalAndUpdateAChart()
+    {
+        $chartId = $this->createChart();
+        $txn = new SplitTransaction(new StringType('test'), new IntType(10));
+        $txn->addEntry(new Entry(new Nominal('7100'),new IntType(1226), AccountType::DR()))
+            ->addEntry(new Entry(new Nominal('2110'),new IntType(1226), AccountType::CR()));
+
+        $txnId = $this->sut->writeTransaction($txn);
+        $journal = $this->adapter->query("select * from sa_journal where id = ?")
+            ->execute([$txnId()])
+            ->current();
+        $this->assertEquals($chartId, $journal['chartId']);
+        $this->assertEquals('test', $journal['note']);
+        $this->assertEquals(10, $journal['ref']);
+
+        $entries = $this->adapter->query('select * from sa_journal_entry where jrnId = ?')
+            ->execute([$txnId()]);
+        $this->assertEquals(2, $entries->count());
+        $entries = $entries->getResource()->fetchAll(\PDO::FETCH_ASSOC);
+
+        $drEntry = array_filter(
+            $entries,
+            function($entry) {
+                return $entry['nominal'] == '7100';
+            }
+        );
+
+        $drEntry = array_pop($drEntry);
+        $this->assertEquals($txnId, $drEntry['jrnId']);
+        $this->assertEquals(1226, $drEntry['acDr']);
+        $this->assertEquals(0, $drEntry['acCr']);
+
+        $crEntry = array_filter(
+            $entries,
+            function($entry) {
+                return $entry['nominal'] == '2110';
+            }
+        );
+        $crEntry = array_pop($crEntry);
+        $this->assertEquals($txnId, $crEntry['jrnId']);
+        $this->assertEquals(1226, $crEntry['acCr']);
+        $this->assertEquals(0, $crEntry['acDr']);
+
+        $chart = $this->sut->fetchChart();
+        $this->assertEquals(
+            1226,
+            $chart->getAccount(new Nominal('7100'))->getBalance()->get()
+        );
+        $this->assertEquals(
+            1226,
+            $chart->getAccount(new Nominal('7000'))->getBalance()->get()
+        );
+        $this->assertEquals(
+            1226,
+            $chart->getAccount(new Nominal('5000'))->dr()->get()
+        );
+        $this->assertEquals(
+            -1226,
+            $chart->getAccount(new Nominal('2110'))->getBalance()->get()
+        );
+        $this->assertEquals(
+            -1226,
+            $chart->getAccount(new Nominal('2100'))->getBalance()->get()
+        );
+        $this->assertEquals(
+            -1226,
+            $chart->getAccount(new Nominal('2000'))->getBalance()->get()
+        );
+        $this->assertEquals(
+            1226,
+            $chart->getAccount(new Nominal('1000'))->cr()->get()
+        );
+        $this->assertEquals(
+            1226,
+            $chart->getAccount(new Nominal('0000'))->dr()->get()
+        );
+        $this->assertEquals(
+            1226,
+            $chart->getAccount(new Nominal('0000'))->cr()->get()
+        );
+    }
+
+    public function testYouCanFetchAJournalTransactionByItsId()
+    {
+        $chartId = $this->createChart();
+        $txn = new SplitTransaction(new StringType('test'), new IntType(10));
+        $txn->addEntry(new Entry(new Nominal('7100'),new IntType(1226), AccountType::DR()))
+            ->addEntry(new Entry(new Nominal('2110'),new IntType(1226), AccountType::CR()));
+
+        $txnId = $this->sut->writeTransaction($txn);
+
+        $storedTxn = $this->sut->fetchTransaction($txnId);
+        $this->assertInstanceOf('SAccounts\Transaction\SplitTransaction', $storedTxn);
+
+        $this->assertEquals(10, $storedTxn->getRef()->get());
+        $this->assertEquals('test', $storedTxn->getNote()->get());
+        $this->assertEquals($txnId, $storedTxn->getId());
+
+        /** @var Entry $drAc */
+        $drAc = $storedTxn->getEntry($storedTxn->getDrAc()[0]);
+        $this->assertEquals('7100', $drAc->getId()->get());
+        $this->assertEquals(1226, $drAc->getAmount()->get());
+        $this->assertTrue($drAc->getType()->equals(AccountType::DR()));
+        /** @var Entry $crAc */
+        $crAc = $storedTxn->getEntry($storedTxn->getCrAc()[0]);
+        $this->assertEquals('2110', $crAc->getId()->get());
+        $this->assertEquals(1226, $crAc->getAmount()->get());
+        $this->assertTrue($crAc->getType()->equals(AccountType::CR()));
+    }
 
     protected function createChart()
     {

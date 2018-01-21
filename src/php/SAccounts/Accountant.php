@@ -14,6 +14,8 @@ use Zend\Db\Adapter\Adapter;
 use Assembler\FFor;
 use Tree\Node\Node;
 use SAccounts\Visitor\NodeSaver;
+use SAccounts\Transaction\SplitTransaction;
+use SAccounts\Transaction\Entry;
 
 class Accountant
 {
@@ -133,17 +135,91 @@ class Accountant
      * @return IntType Transaction Id
      * @throws AccountsException
      */
-    public function writeTransaction(SplitTransaction $txn)
+    public function writeTransaction(SplitTransaction $txn, \DateTime $dateTime = null)
     {
-        return FFor::create()
-            ->txn(function () use ($journal, $txn) {
-                return $journal->write($txn);
-            })
-            ->chart(function ($txn) use ($chart) {
-                $chart->getAccount($txn->getDrAc()[0])->debit($txn->getAmount());
-                $chart->getAccount($txn->getCrAc()[0])->credit($txn->getAmount());
-            })
-            ->fyield('txn');
+        if (is_null($this->chartId)) {
+            throw new AccountsException(self::ERR1);
+        }
+
+        $txns = $txn->getEntries()->toArray();
+        $stmnt = $this->dbAdapter->query(
+            "select sa_fu_add_txn(?, ?, ?, ?, ?, ?, ?) as txnId",
+            Adapter::QUERY_MODE_PREPARE
+        );
+
+        return new IntType(
+            $stmnt->execute(
+                [
+                    $this->chartId->get(),
+                    $txn->getNote()->get(),
+                    is_null($dateTime) ? $dateTime : $dateTime->format('Y-m-d h:m:s'),
+                    $txn->getRef()->get(),
+                    implode(
+                        ',',
+                        array_map(
+                            function(Entry $entry) {
+                                return $entry->getId()->get();
+                            },
+                            $txns
+                        )
+                    ),
+                    implode(
+                        ',',
+                        array_map(
+                            function(Entry $entry) {
+                                return $entry->getAmount()->get();
+                            },
+                            $txns
+                        )
+                    ),
+                    implode(
+                        ',',
+                        array_map(
+                            function(Entry $entry) {
+                                return $entry->getType()->getKey();
+                            },
+                            $txns
+                        )
+                    )
+                ]
+            )->current()['txnId']
+        );
+    }
+
+    /**
+     * Fetch a journal transaction identified by its journal id
+     *
+     * @param IntType $jrnId
+     *
+     * @return SplitTransaction
+     */
+    public function fetchTransaction(IntType $jrnId)
+    {
+        $journal = $this->dbAdapter->query('select * from sa_journal where id = ?')
+            ->execute([$jrnId])
+            ->getResource()->fetchAll(\PDO::FETCH_ASSOC);
+        $journal = array_pop($journal);
+        $entries = $this->dbAdapter->query('select * from sa_journal_entry where jrnId = ?')
+            ->execute([$jrnId()])
+            ->getResource()->fetchAll(\PDO::FETCH_ASSOC);
+
+        $txn = (new SplitTransaction(
+            new StringType($journal['note']),
+            new IntType($journal['ref']),
+            new \DateTime($journal['date'])
+        ))->setId($jrnId);
+
+        foreach ($entries as $entry) {
+            $txn->addEntry(
+                new Entry(
+                    new Nominal($entry['nominal']),
+                    new IntType($entry['acDr'] == 0 ? $entry['acCr'] : $entry['acDr']),
+                    ($entry['acDr'] == 0 ? AccountType::CR() : AccountType::DR())
+                )
+            );
+        }
+
+        return $txn;
     }
 
     /**
