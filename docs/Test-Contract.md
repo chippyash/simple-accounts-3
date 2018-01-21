@@ -30,6 +30,11 @@
 *  ✓ You can write a transaction to a journal and update a chart
 *  ✓ Writing a transaction when chart id is not set will throw an exception
 *  ✓ You can fetch a journal transaction by its id
+*  ✓ You can add an account to a chart
+*  ✓ Adding an account to a non existent parent will throw an exception
+*  ✓ Trying to add a second root account will throw an exception
+*  ✓ You can delete a zero balance account
+*  ✓ Deleting a non zero balance account will throw an exception
 
 ## SAccounts\ChartDefinition
 
