@@ -25,7 +25,8 @@ to create the database components.
 You can run SQL tests by executing `./sqltest.sh`
 
 You can run PHP tests by executing `./build.sh`. This also generates the test contract
-in the ./docs directory.
+in the ./docs directory if you have the [TestDox-Converter](https://github.com/chippyash/Testdox-Converter)
+installed. 
 
 You can run the ./examples/currency-example.php program to see
 how you can convert between floating and integer types.  The library
