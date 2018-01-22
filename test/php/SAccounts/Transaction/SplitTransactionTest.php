@@ -53,13 +53,49 @@ class SplitTransactionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($note, $sut->getNote());
     }
 
+    public function testANullNoteWillBeRetrievedAsAnEmptyString()
+    {
+        $amount = new IntType(1226);
+        $sut = (new SplitTransaction())
+            ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
+            ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
+        $this->assertEquals('', $sut->getNote()->get());
+    }
+
+    public function testYouCanSetAnOptionalSourceOnConstruction()
+    {
+        $amount = new IntType(1226);
+        $sut = (new SplitTransaction(null, new StringType('PUR')))
+            ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
+            ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
+        $this->assertEquals('PUR', $sut->getSrc()->get());
+    }
+
+    public function testANullSourceWillBeRetrievedAsAnEmptyString()
+    {
+        $amount = new IntType(1226);
+        $sut = (new SplitTransaction())
+            ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
+            ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
+        $this->assertEquals('', $sut->getSrc()->get());
+    }
+
     public function testYouCanSetAnOptionalReferenceOnConstruction()
     {
         $amount = new IntType(1226);
-        $sut = (new SplitTransaction(null, new IntType(22)))
+        $sut = (new SplitTransaction(null, null, new IntType(22)))
             ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
             ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
         $this->assertEquals(22, $sut->getRef()->get());
+    }
+
+    public function testANullReferenceWillBeRetrievedAsAZeroInteger()
+    {
+        $amount = new IntType(1226);
+        $sut = (new SplitTransaction())
+            ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
+            ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
+        $this->assertEquals(0, $sut->getRef()->get());
     }
 
     public function testYouCanSetAnOptionalDateOnConstruction()

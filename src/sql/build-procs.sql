@@ -87,6 +87,7 @@ CREATE DEFINER = CURRENT_USER FUNCTION
   chartId INT(10) UNSIGNED,
   note TEXT,
   date DATETIME,
+  src VARCHAR(6),
   ref INT(10) UNSIGNED,
   arNominals TEXT,
   arAmounts TEXT,
@@ -99,10 +100,9 @@ MODIFIES SQL DATA DETERMINISTIC
     DECLARE numInArray INT;
 
     SET date = IFNULL(date, CURRENT_TIMESTAMP);
-    SET ref = IFNULL(ref, 0);
 
-    INSERT INTO sa_journal (`chartId`, `note`, `date`, `ref`)
-      VALUES (chartId, note, date, ref);
+    INSERT INTO sa_journal (`chartId`, `note`, `date`, `src`, `ref`)
+      VALUES (chartId, note, date, src, ref);
     SELECT last_insert_id() INTO jrnId;
 
     SET numInArray = char_length(arNominals) - char_length(replace(arNominals, ',', '')) + 1;

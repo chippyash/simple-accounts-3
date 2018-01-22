@@ -78,7 +78,7 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
     public function testYouCanWriteATransactionToAJournalAndUpdateAChart()
     {
         $chartId = $this->createChart();
-        $txn = new SplitTransaction(new StringType('test'), new IntType(10));
+        $txn = new SplitTransaction(new StringType('test'), new StringType('PUR'), new IntType(10));
         $txn->addEntry(new Entry(new Nominal('7100'),new IntType(1226), AccountType::DR()))
             ->addEntry(new Entry(new Nominal('2110'),new IntType(1226), AccountType::CR()));
 
@@ -163,7 +163,7 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
      */
     public function testWritingATransactionWhenChartIdIsNotSetWillThrowAnException()
     {
-        $txn = new SplitTransaction(new StringType('test'), new IntType(10));
+        $txn = new SplitTransaction(new StringType('test'), new StringType('PUR'), new IntType(10));
         $txn->addEntry(new Entry(new Nominal('7100'),new IntType(1226), AccountType::DR()))
             ->addEntry(new Entry(new Nominal('2110'),new IntType(1226), AccountType::CR()));
 
@@ -173,7 +173,7 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
     public function testYouCanFetchAJournalTransactionByItsId()
     {
         $chartId = $this->createChart();
-        $txn = new SplitTransaction(new StringType('test'), new IntType(10));
+        $txn = new SplitTransaction(new StringType('test'), new StringType('PUR'), new IntType(10));
         $txn->addEntry(new Entry(new Nominal('7100'),new IntType(1226), AccountType::DR()))
             ->addEntry(new Entry(new Nominal('2110'),new IntType(1226), AccountType::CR()));
 

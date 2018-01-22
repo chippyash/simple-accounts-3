@@ -1,4 +1,4 @@
-!#/usr/bin/env php
+#!/usr/bin/env php
 <?php
 /**
  * Simple Double Entry Bookkeeping V3
@@ -83,6 +83,7 @@ $accountant->writeTransaction(
     new SimpleTransaction($bankAc, $salaryAc, $salary, new StringType('Jan salary')),
     new DateTime('2018-01-29')
 );
+echo "Pay salary of {$salary->display()} into Bank\n";
 
 //and spend some on food
 /** @var Currency $food */
@@ -91,6 +92,7 @@ $accountant->writeTransaction(
     new SimpleTransaction($foodAc, $bankAc, $food, new StringType('weekly food shop')),
     new DateTime('2018-01-29')
 );
+echo "Spend {$food->display()} on food\n";
 
 //and save some money for a rainy day
 /** @var Currency $savings */
@@ -99,6 +101,7 @@ $accountant->writeTransaction(
     new SimpleTransaction($savingsAc, $bankAc, $savings, new StringType('rainy day')),
     new DateTime('2018-01-29')
 );
+echo "Save {$savings->display()} for a rainy day\n\n";
 
 echo "Nominal Name                     DR            CR            Balance\n";
 $accountant->fetchChart()->getTree()->accept(new \ChartPrinter());

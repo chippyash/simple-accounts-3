@@ -46,12 +46,25 @@ class SimpleTransactionTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($note, $sut->getNote());
     }
 
+    public function testYouCanSetAnOptionalSourceOnConstruction()
+    {
+        $sut = new SimpleTransaction(
+            new Nominal('0000'),
+            new Nominal('1000'),
+            new IntType(1226),
+            null,
+            new StringType('PUR')
+        );
+        $this->assertEquals('PUR', $sut->getSrc()->get());
+    }
+
     public function testYouCanSetAnOptionalReferenceOnConstruction()
     {
         $sut = new SimpleTransaction(
             new Nominal('0000'),
             new Nominal('1000'),
             new IntType(1226),
+            null,
             null,
             new IntType(22)
         );

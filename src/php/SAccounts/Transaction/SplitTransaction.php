@@ -42,6 +42,11 @@ class SplitTransaction
     protected $note;
 
     /**
+     * @var StringType
+     */
+    protected $src;
+
+    /**
      * @var IntType
      */
     protected $ref;
@@ -55,11 +60,16 @@ class SplitTransaction
      * Constructor
      *
      * @param StringType $note Defaults to '' if not set
-     * @param IntType $ref Defaults to 0 if not set
+     * @param StringType $src  user defined source of transaction
+     * @param IntType $ref user defined reference for transaction
      * @param \DateTime $date Defaults to today if not set
      */
-    public function __construct(StringType $note = null, IntType $ref = null, \DateTime $date = null)
-    {
+    public function __construct(
+        StringType $note = null,
+        StringType $src = null,
+        IntType $ref = null,
+        \DateTime $date = null
+    ) {
         Match::on(Option::create($date))
             ->Monad_Option_Some(function ($opt) {
                 $this->date = $opt->value();
@@ -73,7 +83,15 @@ class SplitTransaction
                 $this->note = $opt->value();
             })
             ->Monad_Option_None(function () {
-                $this->note = new StringType('');
+                $this->note = null;
+            });
+
+        Match::on(Option::create($src))
+            ->Monad_Option_Some(function ($opt) {
+                $this->src = $opt->value();
+            })
+            ->Monad_Option_None(function () {
+                $this->src = null;
             });
 
         Match::on(Option::create($ref))
@@ -81,7 +99,7 @@ class SplitTransaction
                 $this->ref = $opt->value();
             })
             ->Monad_Option_None(function () {
-                $this->ref = new IntType(0);
+                $this->ref = null;
             });
 
         $this->entries = new Entries();
@@ -118,7 +136,15 @@ class SplitTransaction
      */
     public function getNote()
     {
-        return $this->note;
+        return is_null($this->note) ? new StringType('') : $this->note;
+    }
+
+    /**
+     * @return StringType
+     */
+    public function getSrc()
+    {
+        return is_null($this->src) ? new StringType('') : $this->src;
     }
 
     /**
@@ -126,7 +152,7 @@ class SplitTransaction
      */
     public function getRef()
     {
-        return $this->ref;
+        return is_null($this->ref) ? new IntType(0) : $this->ref;
     }
 
     /**

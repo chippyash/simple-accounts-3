@@ -89,9 +89,11 @@ CREATE TABLE `sa_journal` (
   `chartId` int(10) unsigned NOT NULL COMMENT 'the chart to which this journal belongs',
   `note` text COMMENT 'a note for the journal entry',
   `date` datetime DEFAULT CURRENT_TIMESTAMP COMMENT 'timestamp for this journal',
-  `ref` VARCHAR(10) DEFAULT '0' COMMENT 'user defined reference to this journal',
+  `src` VARCHAR(6) COMMENT 'user defined source of journal',
+  `ref` INT(10) UNSIGNED COMMENT 'user defined reference to this journal',
   PRIMARY KEY (`id`),
   KEY `sa_journal_sa_coa_id_fk` (`chartId`),
+  KEY `sa_journal_external_reference` (`src`, `ref`),
   CONSTRAINT `sa_journal_sa_coa_id_fk` FOREIGN KEY (`chartId`) REFERENCES `sa_coa` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Txn Journal Header';
 

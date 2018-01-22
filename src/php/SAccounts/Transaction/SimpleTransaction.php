@@ -36,10 +36,11 @@ class SimpleTransaction extends SplitTransaction
         Nominal $crAc,
         IntType $amount,
         StringType $note = null,
+        StringType $src = null,
         IntType $ref = null,
         \DateTime $date = null
     ) {
-        parent::__construct($note, $ref, $date);
+        parent::__construct($note, $src, $ref, $date);
         $this->addEntry(new Entry($drAc, $amount, AccountType::DR()));
         $this->addEntry(new Entry($crAc, $amount, AccountType::CR()));
     }

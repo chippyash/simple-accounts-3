@@ -146,7 +146,7 @@ class Accountant
 
         $txns = $txn->getEntries()->toArray();
         $stmnt = $this->dbAdapter->query(
-            "select sa_fu_add_txn(?, ?, ?, ?, ?, ?, ?) as txnId",
+            "select sa_fu_add_txn(?, ?, ?, ?, ?, ?, ?, ?) as txnId",
             Adapter::QUERY_MODE_PREPARE
         );
 
@@ -156,7 +156,8 @@ class Accountant
                     $this->chartId->get(),
                     $txn->getNote()->get(),
                     is_null($dateTime) ? $dateTime : $dateTime->format('Y-m-d h:m:s'),
-                    $txn->getRef()->get(),
+                    is_null($txn->getSrc()) ? null : $txn->getSrc()->get(),
+                    is_null($txn->getRef()) ? null: $txn->getRef()->get(),
                     implode(
                         ',',
                         array_map(
@@ -208,6 +209,7 @@ class Accountant
 
         $txn = (new SplitTransaction(
             new StringType($journal['note']),
+            new StringType($journal['src']),
             new IntType($journal['ref']),
             new \DateTime($journal['date'])
         ))->setId($jrnId);
