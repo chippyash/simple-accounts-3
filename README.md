@@ -121,3 +121,14 @@ The library is built to rely on pure SQL in the database.  Whilst I'm providing
 a PHP API layer to it, you can use the underlaying SQL from any language.  If you 
 are a Python, Java or other developer, please feel free to add your own
 language API under the `src` directory
+
+My references here apply to the fact that I develop primarily in PHP.  If they don't 
+apply to your dev language of choice, ignore them.
+
+Most observers of my library code output will note that I have a set layout for the 
+readme file.  I apologise that I am breaking that mould with this one, but it really
+is a stream of consciousness at the moment.
+
+Automated build testing is going on.  This library is not yet ready for production use, 
+but you can find build info at [Travis](https://travis-ci.org/chippyash/simple-accounts-3)
+in preparation for a formal release.  
