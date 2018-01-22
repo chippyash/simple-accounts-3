@@ -80,6 +80,7 @@
 *  ✓ Basic construction sets an empty note on the transaction
 *  ✓ Basic construction sets date for today on the transaction
 *  ✓ You can set an optional note on construction
+*  ✓ You can set an optional source on construction
 *  ✓ You can set an optional reference on construction
 *  ✓ You can set an optional date on construction
 *  ✓ Constructing a transaction does not set its id
@@ -95,7 +96,11 @@
 *  ✓ Basic construction sets an empty note on the transaction
 *  ✓ Basic construction sets date for today on the transaction
 *  ✓ You can set an optional note on construction
+*  ✓ A null note will be retrieved as an empty string
+*  ✓ You can set an optional source on construction
+*  ✓ A null source will be retrieved as an empty string
 *  ✓ You can set an optional reference on construction
+*  ✓ A null reference will be retrieved as a zero integer
 *  ✓ You can set an optional date on construction
 *  ✓ Constructing a split transaction does not set its id
 *  ✓ You can set and get an id
