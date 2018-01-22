@@ -2,9 +2,14 @@
 
 This library is under development. It replaces [chippyash/simple-accounts](https://github.com/chippyash/simple-accounts)
 
-## Requirements whilst under development
+## Requirements
 You will need MariaDB >=10 with the [OQGraph plugin](https://mariadb.com/kb/en/library/oqgraph-storage-engine/)
-installed.
+installed. Take a look at the `.travis.yml` build script for how we do this on the
+Travis build servers.  One 'gotcha' that we know about is the setting of the user
+creating the triggers. Depending on your MariaDb setup, you may need to give the database
+creation script user 'SUPER' privileges.  There seems no rhyme nor reason as to why this
+is, but be aware.  For MariaDb 10 on the travis servers, it needs setting. See 
+`scripts/test-user.sql` 
 
 No Windows support is provided at present.  If you want it, please feel free to make
 a pull request.  The library is developed under Linux.
@@ -15,18 +20,20 @@ Create a database, let's say 'test'.
 
 Create a database user, 'test' with password 'test'.
 
-Give that user all rights to the test database.
+Give that user all rights to the test database. (see note above re SUPER privs)
 
 Now run the create script:
 `./createdb.sh test test test` 
 
 to create the database components.
 
-You can run SQL tests by executing `./sqltest.sh`
+You can run SQL tests by executing `./sqltest.sh`.  Please be aware that this script is
+bound to db = test, uid = test, pwd = test. 
 
 You can run PHP tests by executing `./build.sh`. This also generates the test contract
 in the ./docs directory if you have the [TestDox-Converter](https://github.com/chippyash/Testdox-Converter)
-installed. 
+installed. If you don't then it may fail.  Inspect the script contents to run the raw
+PHPUnit command.
 
 You can run the ./examples/currency-example.php program to see
 how you can convert between floating and integer types.  
@@ -106,6 +113,7 @@ use [Chippyash\Currency](https://github.com/chippyash/currency) or provide your 
 
 You can define charts using xml.  See `src/xml/personal.xml` which is used in the
 example program to create the COA.  The top or root account should always be of type 'real'.
+The root account should be the only 'real' account. 
 
 ## Notes
 
