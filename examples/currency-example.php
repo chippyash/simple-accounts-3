@@ -13,6 +13,11 @@
  * If you are using some other Currency handling convention, you will need to caste
  * into IntType for the accounting API to understand it.
  *
+ * Also note that as far as the simple-accounts database system is concerned,
+ * it doesn't care about the actual currency. It just stores integers.  Using
+ * Currency in this context is as a helper. In the Visitor, for instance, try setting
+ * the currency code to something other than GBP for output.
+ *
  * @author    Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
  * @license   GPL V3+ See LICENSE.md

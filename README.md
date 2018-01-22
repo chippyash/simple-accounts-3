@@ -131,4 +131,6 @@ is a stream of consciousness at the moment.
 
 Automated build testing is going on.  This library is not yet ready for production use, 
 but you can find build info at [Travis](https://travis-ci.org/chippyash/simple-accounts-3)
-in preparation for a formal release.  
+in preparation for a formal release.
+
+Finally, if in doubt, read the source code. It's well documented.  
