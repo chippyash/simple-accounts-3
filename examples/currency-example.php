@@ -4,6 +4,15 @@
  * Simple Double Entry Bookkeeping V3
  *
  * Using the Chippyash\Currency classes in conjunction with Simple Accounts
+ *
+ * One thing that is probably not clear, is that a Currency is a child class of
+ * an IntType, which is why this works seamlessly.
+ *
+ * i.e. giving the Accountant a Currency, is the same as giving it an IntType
+ *
+ * If you are using some other Currency handling convention, you will need to caste
+ * into IntType for the accounting API to understand it.
+ *
  * @author    Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
  * @license   GPL V3+ See LICENSE.md
