@@ -195,8 +195,8 @@ One slightly baffling procedure is `sa_fu_add_txn`. In particular the parameters
 
 These require a matching set of comma delimited values, which is the only way of getting an array into SQL.:
 - arNominals: the list of nominals to effect
-- arAmounts: the amount to use
-- arTxnType: dr or cr for each nominal
+- arAmounts: the list of amounts to use
+- arTxnType: lst of dr or cr for each nominal
 
 The php code deals with this by imploding values into a string before calling the SP:
 
