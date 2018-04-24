@@ -187,6 +187,24 @@ respect the API.  You can see the procedure definitions in the [src/sql/build-pr
 script and the trigger that maintains the account balances in the [src/sql/build-triggers](https://github.com/chippyash/simple-accounts-3/blob/master/src/sql/build-triggers.sql)
 script.
 
+One slightly baffling procedure is `sa_fu_add_txn`. In particular the parameters, 
+- arNominals TEXT,
+- arAmounts TEXT,
+- arTxnType TEXT
+
+These require a matching set of comma delimited values, which is the only way of getting an array into SQL.:
+- arNominals: the list of nominals to effect
+- arAmounts: the amount to use
+- arTxnType: dr or cr for each nominal
+
+The php code deals with this by imploding values into a string before calling the SP:
+
+See Accountant::writeTransaction() method.
+
+Otherwise the SQL is pretty straight forward.  Study the OQGraph
+docs for an understanding of how it's being used but again, it's pretty
+simple. Magic underneath, but simple to use - my kind of code ;-) 
+
 If you are a better SQL Head than me (not hard!), then I'd appreciate any suggestions
 for operational efficiency.
 
