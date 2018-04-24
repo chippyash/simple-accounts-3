@@ -3,6 +3,7 @@
 ## Quality Assurance
 
 ![PHP 5.6](https://img.shields.io/badge/PHP-5.6-blue.svg)
+![MariaDb 10.0](https://img.shields.io/badge/MariaDb-10.0-blue.svg)
 [![Build Status](https://travis-ci.org/chippyash/simple-accounts-3.svg?branch=master)](https://travis-ci.org/chippyash/simple-accounts-3)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5811a42ebda892357fba/test_coverage)](https://codeclimate.com/github/chippyash/simple-accounts-3/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5811a42ebda892357fba/maintainability)](https://codeclimate.com/github/chippyash/simple-accounts-3/maintainability)
@@ -47,7 +48,7 @@ a pull request.  The library is developed under Linux.
 ### Getting it up and running
 
 Run composer.phar install to load in the PHP dependencies.  Sorry, but PHP ~5.6 only.
-PHP 7 isn't tested yet, you'll see a badge in Quality Assurance when it is
+PHP 7 isn't tested yet, you'll see a badge in Quality Assurance when it is. (If you want to help, please contact me)
 
 Create a database, let's say 'test'.
 
