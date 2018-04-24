@@ -202,8 +202,7 @@ The php code deals with this by imploding values into a string before calling th
 See Accountant::writeTransaction() method.
 
 Otherwise the SQL is pretty straight forward.  Study the OQGraph
-docs for an understanding of how it's being used but again, it's pretty
-simple. Magic underneath, but simple to use - my kind of code ;-) 
+docs for an understanding of how it's being used but. Magic underneath, but simple to use - my kind of code ;-) 
 
 If you are a better SQL Head than me (not hard!), then I'd appreciate any suggestions
 for operational efficiency.
