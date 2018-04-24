@@ -27,11 +27,17 @@ is, but be aware.  For MariaDb 10 on the travis servers, it needs setting. See
 No Windows support is provided at present.  If you want it, please feel free to make
 a pull request.  The library is developed under Linux.
 
-Run composer.phar install to load in the PHP dependencies.  Sorry, but PHP >= 5.6 only.
+## How
+
+### Getting it up and running
+
+Run composer.phar install to load in the PHP dependencies.  Sorry, but PHP ~5.6 only.
+PHP 7 isn't tested yet, you'll see a badge in Quality Assurance when it is
 
 Create a database, let's say 'test'.
 
-Create a database user, 'test' with password 'test'.
+Create a database user, 'test' with password 'test'. (You can run `scripts\test-user.sql`
+to do this.)
 
 Give that user all rights to the test database. (see note above re SUPER privs)
 
@@ -48,7 +54,7 @@ in the ./docs directory if you have the [TestDox-Converter](https://github.com/c
 installed. If you don't then it may fail.  Inspect the script contents to run the raw
 PHPUnit command.
 
-You can run the ./examples/currency-example.php program to see
+You can run the `examples/currency-example.php` program to see
 how you can convert between floating and integer types.  
 <pre>
 cd examples
@@ -124,6 +130,10 @@ Go look at the database journal tables for their entries
 The library and supporting database only handle integers, so if you need float support,
 use [Chippyash\Currency](https://github.com/chippyash/currency) or provide your own handlers.
 
+### Coding Basics (PHP)
+
+(coming soon)
+
 You can define charts using xml.  See `src/xml/personal.xml` which is used in the
 example program to create the COA.  The top or root account should always be of type 'real'.
 The root account should be the only 'real' account. 
@@ -138,12 +148,78 @@ language API under the `src` directory
 My references here apply to the fact that I develop primarily in PHP.  If they don't 
 apply to your dev language of choice, ignore them.
 
-Most observers of my library code output will note that I have a set layout for the 
-readme file.  I apologise that I am breaking that mould with this one, but it really
-is a stream of consciousness at the moment.
-
-Automated build testing is going on.  This library is not yet ready for production use, 
-but you can find build info at [Travis](https://travis-ci.org/chippyash/simple-accounts-3)
-in preparation for a formal release.
 
 Finally, if in doubt, read the source code. It's well documented.  
+
+## Further documentation
+
+[Test Contract](https://github.com/chippyash/simple-accounts-3/blob/master/docs/Test-Contract.md) in the docs directory.
+
+Check out [ZF4 Packages](http://zf4.biz/packages?utm_source=github&utm_medium=web&utm_campaign=blinks&utm_content=simpleaccounts3) for more packages
+
+## Changing the library
+
+1.  fork it
+2.  write the test
+3.  amend it
+4.  do a pull request
+
+Found a bug you can't figure out?
+
+1.  fork it
+2.  write the test
+3.  do a pull request
+
+NB. Make sure you rebase to HEAD before your pull request
+
+Or - raise an issue ticket.
+
+## Where?
+
+The library is hosted at [Github](https://github.com/chippyash/simple-accounts-3). It is
+available at [Packagist.org](https://packagist.org/packages/chippyash/simple-accounts-3)
+
+### Installation
+
+Install [Composer](https://getcomposer.org/)
+
+#### For production
+
+<pre>
+    "chippyash/simple-accounts-3": "~1.0"
+</pre>
+ 
+#### For development
+
+Clone this repo, and then run Composer in local repo root to pull in dependencies
+
+<pre>
+    git clone git@github.com:chippyash/simple-accounts-3.git simple-accounts
+    cd simple-accounts
+    composer update
+</pre>
+
+To run the tests:
+
+<pre>
+    cd simple-accounts
+    vendor/bin/phpunit -c test/phpunit.xml test/
+</pre>
+
+## License
+
+This software library is released under the [GNU GPL V3 or later license](http://www.gnu.org/copyleft/gpl.html)
+
+This software library is Copyright (c) 2017-2018, Ashley Kitson, UK
+
+A commercial license is available for this software library, please contact the author. 
+It is normally free to deserving causes, but gets you around the limitation of the GPL
+license, which does not allow unrestricted inclusion of this code in commercial works.
+
+This library is supported by <a href="https://www.jetbrains.com"><img src="https://github.com/chippyash/Strong-Type/raw/master/img/JetBrains.png" alt="Jetbrains" style="height: 200px;vertical-align: middle;"></a>
+who provide their IDEs to Open Source developers.
+
+
+## History
+
+V1.0.0 First production release
