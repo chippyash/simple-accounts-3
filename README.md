@@ -203,7 +203,7 @@ See Accountant::writeTransaction() method.
 See test/sql/add_transaction_test.sql circa L17 for how the SQL proc is called natively.
  
 Otherwise the SQL is pretty straight forward.  Study the OQGraph
-docs for an understanding of how it's being used but. Magic underneath, but simple to use - my kind of code ;-) 
+docs for an understanding of how it's being used. Magic underneath, but simple to use - my kind of code ;-) 
 
 If you are a better SQL Head than me (not hard!), then I'd appreciate any suggestions
 for operational efficiency.
