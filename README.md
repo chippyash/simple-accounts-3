@@ -200,7 +200,8 @@ These require a matching set of comma delimited values, which is the only way of
 The php code deals with this by imploding values into a string before calling the SP:
 
 See Accountant::writeTransaction() method.
-
+See test/sql/add_transaction_test.sql circa L17 for how the SQL proc is called natively.
+ 
 Otherwise the SQL is pretty straight forward.  Study the OQGraph
 docs for an understanding of how it's being used but. Magic underneath, but simple to use - my kind of code ;-) 
 
