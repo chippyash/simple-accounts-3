@@ -4,8 +4,8 @@
 
 ![PHP 5.6](https://img.shields.io/badge/PHP-5.6-blue.svg)
 [![Build Status](https://travis-ci.org/chippyash/simple-accounts-3.svg?branch=master)](https://travis-ci.org/chippyash/simple-accounts-3)
-[![Test Coverage](https://codeclimate.com/github/chippyash/Strong-Type/badges/coverage.svg)](https://codeclimate.com/github/chippyash/Strong-Type/coverage)
-[![Code Climate](https://codeclimate.com/github/chippyash/Strong-Type/badges/gpa.svg)](https://codeclimate.com/github/chippyash/Strong-Type)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/5811a42ebda892357fba/test_coverage)](https://codeclimate.com/github/chippyash/simple-accounts-3/test_coverage)
+[![Maintainability](https://api.codeclimate.com/v1/badges/5811a42ebda892357fba/maintainability)](https://codeclimate.com/github/chippyash/simple-accounts-3/maintainability)
 
 
 ## What

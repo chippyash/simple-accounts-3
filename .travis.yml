@@ -9,7 +9,7 @@ php:
   # aliased to a recent 5.6.x version
   - 5.6
   # aliased to a recent 7.x version
-  - 7
+  #- 7
   # hhvm
   #- hhvm
 
@@ -20,15 +20,15 @@ before_script:
   - sudo mysql < ./scripts/test-user.sql
   - ./createdb.sh test test test
   - composer install --no-interaction
-  #- curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  #- chmod +x ./cc-test-reporter
-  #- ./cc-test-reporter before-build
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
 
 script:
   - vendor/phpunit/phpunit/phpunit --configuration ./phpunit.travis.xml test/php
 
 after_success:
-  #- ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
+  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
 # configure notifications (email, IRC, campfire etc)
 notifications:
