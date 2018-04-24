@@ -10,10 +10,25 @@
 
 ## What
 
-Provides a simple database backed accounting library that allows for a quick implementation
-of double entry book keeping into an application.
+Provides a simple database backed general ledger accounting library that allows for a 
+quick implementation of double entry book keeping into an application.
 
 This library replaces [chippyash/simple-accounts](https://github.com/chippyash/simple-accounts)
+
+This library does not provide sales ledgers, purchase ledgers, or other operational
+ledgers.  Your application probably has these in one form or another.  This provides
+the 'central' accounting functionality.
+
+## Why
+
+Whilst full blown accounting systems are available, requiring a massive integration 
+effort, some applications simply need to be able keep some form of internal account. 
+This library is the direct descendant of something I wrote for a client many years 
+ago to keep account of game points earned on a web site. Using the double entry 
+accounting paradigm allowed the site owner to keep track of who had gathered points, 
+and in which ways, whilst at the same time seeing what this meant to their business 
+as game points translated into real world value for the customer by way of discounts 
+and prizes.
 
 ## Requirements
 You will need MariaDB >=10 with the [OQGraph plugin](https://mariadb.com/kb/en/library/oqgraph-storage-engine/)
@@ -130,9 +145,52 @@ Go look at the database journal tables for their entries
 The library and supporting database only handle integers, so if you need float support,
 use [Chippyash\Currency](https://github.com/chippyash/currency) or provide your own handlers.
 
-### Coding Basics (PHP)
+### Coding Basics- Terminology
 
-(coming soon)
+To keep things concise and avoid confusion, particularly if you are an Accountant and
+used to different terminology, here is a definition of terms used in this readme.
+
+- SA: Simple Accounts, this library
+- COA: Chart of Account.  This is an entire chart.  It has ledgers.  A COA is hierarchical
+in nature, with a `root` ledger, normally called 'COA'.  It generally has 2 main child
+ledgers, the balance sheet (BS) and the profit and loss account (P&L).  Under these, various
+other ledgers will exist.  You can find numerous references to COA construction on
+t'internet. 
+- Ledger or Account: Used interchangeably. A line in the COA that holds the balance of 
+all Journal transactions that have been made on the Ledger. In SA, the guiding principle 
+is that if you update a child ledger, then it will update its parents all the way to
+the root ledger, thus keeping the the entire COA in balance.
+- Nominal or Nominal code: In General Ledger (GL), ledgers are often refered to by their
+`nominal code` or `nominal`.  This is accountant or book keeper short code for a ledger.
+Each Ledger in this system has a Nominal Code.  From a database point of view, it provides
+part of the ledger unique key along with the chart id. By convention, it is a Digit String
+and is usually from 4 digits upwards.  Nominals are used to group related Ledgers
+together.  By default this library supports up to a 10 digit Nominal Code.  The example
+programs only use 4 digits which is more than sufficient for everyday usage.  See the
+chart of account xml files for examples.   
+- Journal or Journal Entry or Transaction: A record of a change in the balance on a
+Ledger.  It comprises two parts, the details of the reason for the entry, and the details
+of the changes to each ledger that it effects. A Journal must be balanced.  That is
+its debit and credit amounts must be equal.  The system will bork if they are not. This
+is a principle defence for double entry book keeping.  
+   
+### Coding Basics (PHP)
+#### Changes from previous library versions
+##### Organisations
+Unlike the previous version of this library, we don't support the concepts of
+organisations.  Organisations are outside of the remit of this
+library as your implementation of them will differ according to your needs. Instead
+you should plan on creating some form of many to many table between your organisations
+and any chart of accounts (COA) that they use.  The `sa_coa` table can hold an 
+infinite number of COAs, so it shouldn't be too much of a problem.
+##### Control accounts
+Like Organisations, we don't support the concept of control accounts in this library.
+They are again an implementation detail between your application and this library,
+more usually a configuration issue.  So add config linking where you need such functionality.
+Another problem was the use of the term.  Too many accountants objected to it being
+used in its previous incarnation, that it was safer to leave it out.
+ 
+**To Be Continued**
 
 You can define charts using xml.  See `src/xml/personal.xml` which is used in the
 example program to create the COA.  The top or root account should always be of type 'real'.
