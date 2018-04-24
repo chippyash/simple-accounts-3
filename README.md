@@ -174,6 +174,22 @@ of the changes to each ledger that it effects. A Journal must be balanced.  That
 its debit and credit amounts must be equal.  The system will bork if they are not. This
 is a principle defence for double entry book keeping.  
    
+### Coding Basics (SQL)
+As mentioned elsewhere, the fundamentals of this library lay in the SQL code, which
+runs on MariaDb with the OQGraph plugin installed.  OQGraph provides a very fast and
+efficient way of using hierarchical data within an RDMS.  The alternative is to use
+some [nested set strategy](http://mikehillyer.com/articles/managing-hierarchical-data-in-mysql/)
+which can of course be done, but slows down the whole operation.  If you fancy doing 
+a plain nested set implementation, please consider contributing to this library.
+
+The SQL API is provided via stored procedures.  If you want to provide variants, please
+respect the API.  You can see the procedure definitions in the [src/sql/build-procs](https://github.com/chippyash/simple-accounts-3/blob/master/src/sql/build-procs.sql)
+script and the trigger that maintains the account balances in the [src/sql/build-triggers](https://github.com/chippyash/simple-accounts-3/blob/master/src/sql/build-triggers.sql)
+script.
+
+If you are a better SQL Head than me (not hard!), then I'd appreciate any suggestions
+for operational efficiency.
+
 ### Coding Basics (PHP)
 #### Changes from previous library versions
 ##### Organisations
