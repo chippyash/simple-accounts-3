@@ -143,11 +143,12 @@ final class AccountType extends Enum
         if (($this->value & self::DR) == self::DR) {
             //debit account type
             return new IntType($dr() - $cr());
-        } elseif (($this->value & self::CR) == self::CR) {
+        }
+        if (($this->value & self::CR) == self::CR) {
             //credit account type
             return new IntType($cr() - $dr());
-        } else {
-            throw new AccountsException('Cannot determine account type to set balance: ' . $this->value);
         }
+
+        throw new AccountsException('Cannot determine account type to set balance: ' . $this->value);
     }
 }

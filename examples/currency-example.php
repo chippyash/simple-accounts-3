@@ -28,43 +28,16 @@ require_once '../vendor/autoload.php';
 use Chippyash\Currency\Currency;
 use Chippyash\Currency\Factory as Crcy;
 use Chippyash\Type\String\StringType;
-use SAccounts\Account;
 use SAccounts\Accountant;
-use SAccounts\AccountType;
 use SAccounts\ChartDefinition;
+use SAccounts\Visitor\ChartPrinter;
 use SAccounts\Nominal;
 use SAccounts\Transaction\SimpleTransaction;
-use Tree\Node\NodeInterface;
-use Tree\Visitor\Visitor;
 use Zend\Db\Adapter\Adapter;
 
-/**
- * Utility class to print chart values
- */
-class chartPrinter implements Visitor
-{
-    /**
-     * @param NodeInterface $node
-     *
-     * @return mixed
-     */
-    public function visit(NodeInterface $node)
-    {
-        /** @var Account $ac */
-        $ac = $node->getValue();
-        $nominal = str_pad($ac->getNominal(), 8);
-        $name = str_pad($ac->getName(), 20);
-        $dr = str_pad(Crcy::create('GBP')->set($ac->dr()->get())->display(), 15, ' ', STR_PAD_LEFT);
-        $cr = str_pad(Crcy::create('GBP')->set($ac->cr()->get())->display(), 15, ' ', STR_PAD_LEFT);
-        $balStr = ($ac->getType()->equals(AccountType::REAL()) ? Crcy::create('GBP', 0)->display() : Crcy::create('GBP')->set($ac->getBalance()->get())->display());
-        $balance = str_pad($balStr, 15, ' ', STR_PAD_LEFT);
-        echo "{$nominal}{$name}{$dr}{$cr}{$balance}\n";
-
-        foreach ($node->getChildren() as $child) {
-            $child->accept($this);
-        }
-    }
-}
+//currency code to use, try USD,EUR,BHD etc
+//You can find valid codes in vendor/chippyash/currency/data/iso4217.xml
+$crcyCd = 'GBP';
 
 //set up database connection
 $adapter = new Adapter(
@@ -75,6 +48,7 @@ $adapter = new Adapter(
         'password' => 'test'
     ]
 );
+
 //clear down the test data
 $adapter->query('delete from sa_coa', Adapter::QUERY_MODE_EXECUTE);
 
@@ -92,7 +66,7 @@ $foodAc = new Nominal('6400');
 
 //let's pay our salary into the bank
 /** @var Currency $salary */
-$salary = Crcy::create('GBP', 4203.45);
+$salary = Crcy::create($crcyCd, 4203.45);
 $accountant->writeTransaction(
     new SimpleTransaction($bankAc, $salaryAc, $salary, new StringType('Jan salary')),
     new DateTime('2018-01-29')
@@ -101,7 +75,7 @@ echo "Pay salary of {$salary->display()} into Bank\n";
 
 //and spend some on food
 /** @var Currency $food */
-$food = Crcy::create('GBP', 120.16);
+$food = Crcy::create($crcyCd, 120.16);
 $accountant->writeTransaction(
     new SimpleTransaction($foodAc, $bankAc, $food, new StringType('weekly food shop')),
     new DateTime('2018-01-29')
@@ -110,14 +84,14 @@ echo "Spend {$food->display()} on food\n";
 
 //and save some money for a rainy day
 /** @var Currency $savings */
-$savings = Crcy::create('GBP', 500);
+$savings = Crcy::create($crcyCd, 500);
 $accountant->writeTransaction(
     new SimpleTransaction($savingsAc, $bankAc, $savings, new StringType('rainy day')),
     new DateTime('2018-01-29')
 );
 echo "Save {$savings->display()} for a rainy day\n\n";
 
-echo "Nominal Name                     DR            CR            Balance\n";
-$accountant->fetchChart()->getTree()->accept(new \ChartPrinter());
+//Print out the chart using the console ChartPrinter
+$accountant->fetchChart()->getTree()->accept(new ChartPrinter(Crcy::create($crcyCd)));
 
 echo "\nGo look at the database journal tables for their entries\n";

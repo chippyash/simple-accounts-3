@@ -1,6 +1,19 @@
 # chippyash/simple-accounts-3
 
-This library is under development. It replaces [chippyash/simple-accounts](https://github.com/chippyash/simple-accounts)
+## Quality Assurance
+
+![PHP 5.6](https://img.shields.io/badge/PHP-5.6-blue.svg)
+[![Build Status](https://travis-ci.org/chippyash/simple-accounts-3.svg?branch=master)](https://travis-ci.org/chippyash/simple-accounts-3)
+[![Test Coverage](https://codeclimate.com/github/chippyash/Strong-Type/badges/coverage.svg)](https://codeclimate.com/github/chippyash/Strong-Type/coverage)
+[![Code Climate](https://codeclimate.com/github/chippyash/Strong-Type/badges/gpa.svg)](https://codeclimate.com/github/chippyash/Strong-Type)
+
+
+## What
+
+Provides a simple database backed accounting library that allows for a quick implementation
+of double entry book keeping into an application.
+
+This library replaces [chippyash/simple-accounts](https://github.com/chippyash/simple-accounts)
 
 ## Requirements
 You will need MariaDB >=10 with the [OQGraph plugin](https://mariadb.com/kb/en/library/oqgraph-storage-engine/)
