@@ -53,7 +53,7 @@
 *  ✓ Trying to get a non existent account will throw an exception
 *  ✓ You can test if a chart has an account
 *  ✓ Trying to get a parent id of a non existent account will throw an exception
-*  ✓ Getting the parent id of an account that has a parent will return the parent id
+*  ✓ Getting the parent id of an account that has a parent will return the parent nominal
 *  ✓ You can provide an optional internal id when constructing a chart
 *  ✓ You can set the chart root node
 

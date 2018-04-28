@@ -98,10 +98,10 @@ class Chart implements Identifiable
     }
 
     /**
-     * Get Id of parent for an account
+     * Get Nominal of parent for an account
      *
      * @param Nominal $nId
-     * @return null|IntType
+     * @return null|Nominal
      *
      * @throws AccountsException
      */

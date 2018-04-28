@@ -104,7 +104,7 @@ class ChartTest extends \PHPUnit_Framework_TestCase {
         $this->sut->getParentId(new Nominal('9999'));
     }
 
-    public function testGettingTheParentIdOfAnAccountThatHasAParentWillReturnTheParentId()
+    public function testGettingTheParentIdOfAnAccountThatHasAParentWillReturnTheParentNominal()
     {
         $this->assertEquals('0000', $this->sut->getParentId(new Nominal('2000'))->get());
     }

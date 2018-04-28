@@ -210,6 +210,10 @@ If you are a better SQL Head than me (not hard!), then I'd appreciate any sugges
 for operational efficiency.
 
 ### Coding Basics (PHP)
+
+Whilst what follows will give you an introduction to what you can do with the library,
+you should always look to the tests to gain further insight.
+
 #### Changes from previous library versions
 ##### Organisations
 Unlike the previous version of this library, we don't support the concepts of
@@ -218,6 +222,7 @@ library as your implementation of them will differ according to your needs. Inst
 you should plan on creating some form of many to many table between your organisations
 and any chart of accounts (COA) that they use.  The `sa_coa` table can hold an 
 infinite number of COAs, so it shouldn't be too much of a problem.
+
 ##### Control accounts
 Like Organisations, we don't support the concept of control accounts in this library.
 They are again an implementation detail between your application and this library,
@@ -225,11 +230,260 @@ more usually a configuration issue.  So add config linking where you need such f
 Another problem was the use of the term.  Too many accountants objected to it being
 used in its previous incarnation, that it was safer to leave it out.
  
-**To Be Continued**
+#### The Accountant
+The Accountant is responsible for the majority of operations that you can carry out
+in Simple Accounts and needs to be created before anything else can happen.  The 
+Accountant requires a Zend Db Adapter as a construction parameter.
 
-You can define charts using xml.  See `src/xml/personal.xml` which is used in the
-example program to create the COA.  The top or root account should always be of type 'real'.
-The root account should be the only 'real' account. 
+<pre>
+use SAccounts\Accountant;
+use Zend\Db\Adapter\Adapter;
+
+$accountant = new Accountant(
+	new Adapter(
+		[
+			'driver' => 'Pdo_mysql',
+			'database' => 'test',
+			'username' => 'test',
+			'password' => 'test'		
+		]
+	)
+);
+</pre>
+
+#### Creating a new chart of accounts
+
+You create a new chart of accounts (COA) by supplying a ChartDefinition.  The
+ChartDefinition is supplied with an XML definition file. An example of a definition
+can be found in `src\xml\personal.xml` along with the XSD that is used to validate
+any definitions in `src\xsd\chart-definition.xsd`.
+
+<pre>
+use SAccounts\ChartDefinition;
+use Chippyash\Type\String\StringType;
+use Chippyash\Type\Number\IntType;
+
+$definition = new ChartDefinition(new StringType('src/xml/personal.xml'));
+
+/* @var IntType $chartId */
+$chartId = $accountant->createChart(new StringType('Personal'), $definition);
+</pre>
+
+This will create the entries in the `sa_coa` table and return you the id of the
+new chart.  You will probably want to store this in your own tables so you can
+retrieve it later.
+
+The Accountant is now tied to that COA.  To use another COA you will
+need to create another Accountant.  To create the Accountant and tell it to use an
+existing COA, simply give the chart id (as an IntType) as the second parameter
+when constructing the Accountant.
+
+Please note that you never have to explicitly save the COA.  It is done transactionally
+by the Accountant when you carry out operations with it.
+
+#### Accountant operations
+
+Most operations on the COA are carried out via the Accountant.
+
+Operations on the COA invariably require you to give the Nominal code for the Account
+which is to say, the Account identifier. Whilst in the database primary integer
+ids are used, externally we operate using the Nominal code.
+
+##### Adding an Account ledger to the COA
+<pre>
+use SAccounts\Nominal;
+use SAccounts\Account;
+
+$nominal = new Nominal('7700');
+$prntNominal = new Nominal(('7000'));
+
+$accountant->addAccount(
+	$nominal,  		//nominal code
+	AccountType::EXPENSE(), //account type
+	new StringType('foo'),	//account name
+	$prntNominal		//parent account nominal code (or null)
+	);
+</pre>
+
+The parent Nominal must exist already with one exception. In a brand new COA you can
+add the root Account leave out the parent Nominal parameter.  For a root Account
+the AccountType mst be AccountType::REAL(). Trying to add a second
+root Account will throw an exception.
+
+The AccountType is important and must be appropriate for the Account you are adding.
+It controls how the balance on the Account is derived.  It also allows you to display
+appropriate labels for the debit and credit values on an account. Take a look at the 
+`src\xml\personal.xml` file for an example of how AccountTypes are used.
+
+##### Deleting an Account ledger from the COA
+
+You can delete an Account ledger only if its balance is zero. Attempting to delete
+a non zero ledger will throw an exception.  NB. Deleting a ledger will delete all of 
+its child ledgers as well.
+
+<pre>
+$accountant->delAccount(new Nominal('7000'));
+</pre>
+
+#### Fetching the COA
+
+Having created the COA or instantiated the Accountant with the chart id, you can fetch
+the COA simply with:
+
+<pre>
+use SAccounts\Chart;
+
+/* @var Chart $chart */
+$chart = $accountant->fetchChart(); 
+</pre>
+
+#### Operations on the COA
+
+##### Basic COA operations
+
+<pre>
+//get an Account from the Chart
+/* @var Account $acount */
+$account = $chart->getAccount(new Nominal('2000'));
+
+//get the parent account of an Account
+$account = $chart->getAccount($chart->getParentId(new Nominal('2000')))
+//or
+$subAccount = $chart->getAccount(new Nominal('2000'));
+$prntAccount = $chart->getAccount($chart->getParentId($account->getNominal()));
+
+//testing if an account exists in the COA
+//returns true or false
+$exists = $chart->hasAccount(new Nominal('3000'));
+
+//get the name of the COA
+/* @var StringType $name */
+$name = $chart->getName();
+</pre>
+
+##### The COA as a Tree
+
+Under the covers, the chart is kept as a [nicmart/Tree](https://github.com/nicmart/Tree)
+which I do recommend to you if you need to carry out Tree operations. Gaining access
+to it is useful for a variety of tasks, such as displaying a trial balance. For this
+we use tree Visitors. You can see a full working example of this in the 
+`examples\currency-example.php` script.  The line of interest is:
+
+<pre>
+$accountant->fetchChart()->getTree()->accept(new ChartPrinter(Crcy::create($crcyCd)));
+</pre>
+
+Two end user Visitors are supplied: 
+ - `SAccounts\Visitor\ChartPrinter` which prints the COA to the console
+ - `SAccounts\Visitor\ChartArray` which returns the COA as an array of values and 
+ account balances
+ 
+Other Visitors are used internally in the Chart, but they should all give you a firm
+grasp on how to create your own if you need to.
+
+#### Journal Entries
+
+##### Creating Entries
+
+You create Journal entries in your accounts by adding Transactions to the system. A
+Transaction is made up of two parts, the Journal description and a list of transaction
+entries, one for each account that is effected by the transaction.  Those transactions
+have a debit or credit amount.  The sum of all debits must equal the sum of all
+credits so that the transaction balances in order for the Transaction to be accepted by
+the system.
+
+The basic Trasaction type is the SplitTransaction:
+
+<pre>
+    /**
+     * Constructor
+     *
+     * @param StringType $note Defaults to '' if not set
+     * @param StringType $src  user defined source of transaction
+     * @param IntType $ref user defined reference for transaction
+     * @param \DateTime $date Defaults to today if not set
+     */
+    public function __construct(
+        StringType $note = null,
+        StringType $src = null,
+        IntType $ref = null,
+        \DateTime $date = null
+    )
+</pre>
+
+After construction, you add transaction entries by passing an Entry object to the addEntry()
+method.
+
+<pre>
+use SAccounts\Transaction\SplitTransaction;
+use SAccounts\Transaction\Entry;
+
+$amount = new IntType(100);
+$txn = (new SplitTransaction())
+     ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
+     ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()))
+</pre>
+
+Here, we added two entries for same amount to two accounts, but with the transaction
+type being debit for one and credit for the other.  You can check that the
+transaction is balanced with the `checkBalance()` method which will return true
+if the transaction is balanced or false otherwise.
+
+Whilst the SplitTransaction is useful for adding transactions that comprise of many
+entries (e.g. a sale comprises of sale account, vat account and a bank account entries),
+for a simple two account entry(like a transfer between bank accounts) you can use the
+SimpleTransaction, which is a child of SplitTransaction.
+
+<pre>
+    /**
+     * Constructor
+     *
+     * @param Nominal $drAc Account to debit
+     * @param Nominal $crAc Account to credit
+     * @param IntType $amount Transaction amount
+     * @param StringType $note Defaults to '' if not set
+     * @param IntType $ref Defaults to 0 if not set
+     * @param \DateTime $date Defaults to today if not set
+     */
+    public function __construct(
+        Nominal $drAc,
+        Nominal $crAc,
+        IntType $amount,
+        StringType $note = null,
+        StringType $src = null,
+        IntType $ref = null,
+        \DateTime $date = null
+    )
+</pre>
+
+Thus:
+
+<pre>
+use SAccounts\Transaction\SimpleTransactio;
+
+$txn = new SimpleTransaction(new Nominal('0000'), new Nominal('1000'), new IntType(1226));
+</pre>
+
+Having created your transaction by whatever means, you can then add it to the accounts 
+with:
+
+<pre>
+/* @var IntType $txnId */
+$txnId = $accountant->writeTransaction($txn);
+</pre>
+
+Writing a transaction automatically updates the COA ledger balances.
+
+##### Retrieving Entries
+
+You retrieve a single transaction from the accounts with
+
+<pre>
+/* @var SplitTransaction $txn */
+$txn = $accountant->fetchTransaction(new IntType(102));
+</pre>
+
+Retrieving all entries for an Account: TBC - functionality in next feature release.
 
 ## Notes
 
@@ -316,3 +570,4 @@ who provide their IDEs to Open Source developers.
 ## History
 
 V1.0.0 First production release
+V1.0.1 Documentation for first release
