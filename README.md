@@ -61,7 +61,7 @@ Now run the create script:
 `./createdb.sh test test test` 
 
 to create the database components. NB - PHP Doctrine Migration users should read the
-PHP code basic setion to utilise the supplied migrations.
+PHP code basic section to utilise the supplied migrations.
 
 You can run SQL tests by executing `./sqltest.sh`.  Please be aware that this script is
 bound to db = test, uid = test, pwd = test. 
@@ -597,3 +597,5 @@ V1.0.0 First production release
 V1.0.1 Documentation for first release
 
 V1.1.0 Add PHP Doctrine Migrations
+
+V1.1.1 Change namespace for migrations

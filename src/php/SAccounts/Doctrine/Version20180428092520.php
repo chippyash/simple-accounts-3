@@ -6,7 +6,7 @@
  * @copyright Ashley Kitson, 2018, UK
  * @license   GPL V3+ See LICENSE.md
  */
-namespace DoctrineMigrations;
+namespace SAccounts\Doctrine;
 
 use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
