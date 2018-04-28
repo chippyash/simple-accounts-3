@@ -60,7 +60,8 @@ Give that user all rights to the test database. (see note above re SUPER privs)
 Now run the create script:
 `./createdb.sh test test test` 
 
-to create the database components.
+to create the database components. NB - PHP Doctrine Migration users should read the
+PHP code basic setion to utilise the supplied migrations.
 
 You can run SQL tests by executing `./sqltest.sh`.  Please be aware that this script is
 bound to db = test, uid = test, pwd = test. 
@@ -223,6 +224,28 @@ you should plan on creating some form of one to many join between your organisat
 and any chart of accounts (COA) that they use.  The `sa_coa` table can hold an 
 infinite number of COAs, so it shouldn't be too much of a problem.
 
+#### Doctrine Migrations
+
+If you are using Doctrine Migrations, you can take advantage of the supplied migration 
+files in `src\php\SAccounts\Doctrine`.
+
+For development of this library you can migrate up the required DB structure into the 
+test database by navigating to the root of this library and running
+
+`vendor/bin/doctrine-migrations migrations:migrate --configuration doctrine-migrations.xml --db-configuration doctrine-db.php`
+
+To migrate down use:
+
+`vendor/bin/doctrine-migrations migrations:migrate prev --configuration doctrine-migrations.xml --db-configuration doctrine-db.php`
+
+For production use, either copy the migration files into your own migrations directory, 
+(files are in src/php/SAccounts/Doctrine), or possible more conveniently by creating 
+your own migration classes in your existing structure and the extending them from the 
+supplied migrations. That will keep them in your sequence.
+
+Be aware that new features may result in additional migrations so if you update this 
+library to a new feature version, check for new ones.
+ 
 ##### Control accounts
 Like Organisations, we don't support the concept of control accounts in this library.
 They are again an implementation detail between your application and this library,
@@ -572,3 +595,5 @@ who provide their IDEs to Open Source developers.
 V1.0.0 First production release
 
 V1.0.1 Documentation for first release
+
+V1.1.0 Add PHP Doctrine Migrations
