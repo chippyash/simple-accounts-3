@@ -219,7 +219,7 @@ you should always look to the tests to gain further insight.
 Unlike the previous version of this library, we don't support the concepts of
 organisations.  Organisations are outside of the remit of this
 library as your implementation of them will differ according to your needs. Instead
-you should plan on creating some form of many to many table between your organisations
+you should plan on creating some form of one to many join between your organisations
 and any chart of accounts (COA) that they use.  The `sa_coa` table can hold an 
 infinite number of COAs, so it shouldn't be too much of a problem.
 
@@ -306,8 +306,8 @@ $accountant->addAccount(
 </pre>
 
 The parent Nominal must exist already with one exception. In a brand new COA you can
-add the root Account leave out the parent Nominal parameter.  For a root Account
-the AccountType mst be AccountType::REAL(). Trying to add a second
+add the root Account and leave out the parent Nominal parameter.  For a root Account
+the AccountType must be AccountType::REAL(). Trying to add a second
 root Account will throw an exception.
 
 The AccountType is important and must be appropriate for the Account you are adding.
@@ -392,7 +392,7 @@ have a debit or credit amount.  The sum of all debits must equal the sum of all
 credits so that the transaction balances in order for the Transaction to be accepted by
 the system.
 
-The basic Trasaction type is the SplitTransaction:
+The basic Transaction type is the SplitTransaction:
 
 <pre>
     /**
@@ -459,7 +459,7 @@ SimpleTransaction, which is a child of SplitTransaction.
 Thus:
 
 <pre>
-use SAccounts\Transaction\SimpleTransactio;
+use SAccounts\Transaction\SimpleTransaction;
 
 $txn = new SimpleTransaction(new Nominal('0000'), new Nominal('1000'), new IntType(1226));
 </pre>
@@ -570,4 +570,5 @@ who provide their IDEs to Open Source developers.
 ## History
 
 V1.0.0 First production release
+
 V1.0.1 Documentation for first release
