@@ -5,6 +5,7 @@
 ![PHP 5.6](https://img.shields.io/badge/PHP-5.6-blue.svg)
 ![PHP 7.0](https://img.shields.io/badge/PHP-7.0-blue.svg)
 ![PHP 7.1](https://img.shields.io/badge/PHP-7.1-blue.svg)
+![PHP 7.2](https://img.shields.io/badge/PHP-7.2-blue.svg)
 ![MariaDb 10.0](https://img.shields.io/badge/MariaDb-10.0-blue.svg)
 [![Build Status](https://travis-ci.org/chippyash/simple-accounts-3.svg?branch=master)](https://travis-ci.org/chippyash/simple-accounts-3)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5811a42ebda892357fba/test_coverage)](https://codeclimate.com/github/chippyash/simple-accounts-3/test_coverage)
@@ -602,3 +603,5 @@ V1.1.0 Add PHP Doctrine Migrations
 V1.1.1 Change namespace for migrations
 
 V1.1.2 Support PHP 7.0 & 7.1
+
+V1.1.3 Support PHP 7.2
