@@ -23,6 +23,9 @@ use Zend\Db\Adapter\Exception\InvalidQueryException;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
 
+/**
+ * Main API interface to Simple Accounts
+ */
 class Accountant
 {
     /**@+

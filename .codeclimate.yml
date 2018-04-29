@@ -9,3 +9,18 @@ exclude_paths:
 - "docs/*"
 - "examples/*"
 - "scripts/*"
+checks:
+  argument-count:
+    enabled: false
+  file-lines:
+    enabled: false
+  method-complexity:
+    enabled: false
+  method-count:
+    enabled: false
+  method-lines:
+    enabled: false
+  return-statements:
+    enabled: false
+  similar-code:
+    enabled: false
