@@ -81,6 +81,7 @@ class SimpleTransactionTest extends \PHPUnit_Framework_TestCase
             new IntType(1226),
             $note,
             null,
+            null,
             $dt);
         $this->assertEquals($dt, $sut->getDate());
     }

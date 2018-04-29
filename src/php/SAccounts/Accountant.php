@@ -115,7 +115,7 @@ class Accountant
         $root = new Node(
             new Account(
                 new Nominal($rootAc['nominal']),
-                AccountType::$rootAc['type'](),
+                AccountType::{$rootAc['type']}(),
                 new StringType($rootAc['name']),
                 new IntType($rootAc['acDr']),
                 new IntType($rootAc['acCr'])
@@ -313,7 +313,7 @@ class Accountant
             $childNode = new Node(
                 new Account(
                     new Nominal($childAccount['nominal']),
-                    AccountType::$childAccount['type'](),
+                    AccountType::{$childAccount['type']}(),
                     new StringType($childAccount['name']),
                     new IntType($childAccount['acDr']),
                     new IntType($childAccount['acCr'])

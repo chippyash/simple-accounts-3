@@ -103,7 +103,7 @@ class SplitTransactionTest extends \PHPUnit_Framework_TestCase
         $note = new StringType('foo bar');
         $dt = new \DateTime();
         $amount = new IntType(1226);
-        $sut = (new SplitTransaction($note, null, $dt))
+        $sut = (new SplitTransaction($note, null, null, $dt))
             ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
             ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
         $this->assertEquals($dt, $sut->getDate());
