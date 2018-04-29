@@ -18,6 +18,7 @@ use Tree\Node\Node;
 use SAccounts\Visitor\NodeSaver;
 use SAccounts\Transaction\SplitTransaction;
 use SAccounts\Transaction\Entry;
+use Zend\Db\Adapter\Driver\StatementInterface;
 use Zend\Db\Adapter\Exception\InvalidQueryException;
 use Zend\Db\Sql\Select;
 use Zend\Db\Sql\Sql;
@@ -64,8 +65,7 @@ class Accountant
      */
     public function createChart(StringType $chartName, ChartDefinition $def)
     {
-        /* @var IntType $chartId */
-        $chartId = FFor::create(['def' => $def, 'chartName' => $chartName])
+        $this->chartId = FFor::create(['def' => $def, 'chartName' => $chartName])
             ->root(function ($def) {
                 return (new \DOMXPath($def->getDefinition()))->query('/chart/account')->item(0);
             })
@@ -83,9 +83,7 @@ class Accountant
             })
             ->fyield('store');
 
-        $this->chartId = $chartId;
-        
-        return $chartId;
+        return $this->chartId;
     }
 
     /**
@@ -101,36 +99,48 @@ class Accountant
             throw new AccountsException(self::ERR1);
         }
 
-        $chartId = $this->chartId->get();
-        $accounts = $this->dbAdapter
-            ->query(
-                "call sa_sp_get_tree('{$chartId}')",
-                Adapter::QUERY_MODE_EXECUTE
+        return FFor::create(
+                [
+                    'chartId' => $this->chartId,
+                    'dbAdapter' => $this->dbAdapter
+                ]
             )
-            ->toArray();
-        $chartName = $this->dbAdapter
-            ->query(
-                "select name from sa_coa where id = {$chartId}",
-                Adapter::QUERY_MODE_EXECUTE)
-            ->current()
-            ->offsetGet('name');
-        $rootAc = array_shift($accounts);
-        $root = new Node(
-            new Account(
-                new Nominal($rootAc['nominal']),
-                AccountType::{$rootAc['type']}(),
-                new StringType($rootAc['name']),
-                new IntType($rootAc['acDr']),
-                new IntType($rootAc['acCr'])
-            )
-        );
+            ->accounts(function(IntType $chartId, Adapter $dbAdapter) {
+                return $dbAdapter
+                    ->query(
+                        "call sa_sp_get_tree('{$chartId}')",
+                        Adapter::QUERY_MODE_EXECUTE
+                    )
+                    ->toArray();
+            })
+            ->chartName(function(IntType $chartId, Adapter $dbAdapter) {
+                return new StringType($dbAdapter->query(
+                        "select name from sa_coa where id = {$chartId}",
+                        Adapter::QUERY_MODE_EXECUTE)
+                    ->current()
+                    ->offsetGet('name'));
+            })
+            ->rootAc(function($accounts) {return array_shift($accounts);})
+            ->root(function($rootAc, $accounts) {
+                $root = new Node(
+                    new Account(
+                        new Nominal($rootAc['nominal']),
+                        AccountType::{$rootAc['type']}(),
+                        new StringType($rootAc['name']),
+                        new IntType($rootAc['acDr']),
+                        new IntType($rootAc['acCr'])
+                    )
+                );
 
-        $root = $this->buildTreeFromDb(
-            $root, $accounts, $rootAc['destid']
-        );
-
-        return new Chart(new StringType($chartName), $root, $this->chartId);
-    }
+                return $this->buildTreeFromDb(
+                    $root, $accounts, $rootAc['destid']
+                );
+            })
+            ->chart(function(StringType $chartName, Node $root, IntType $chartId) {
+                return new Chart($chartName, $root, $chartId);
+            })
+            ->fyield('chart');
+        }
 
     /**
      * Write a Transaction to the Journal and update the Chart
@@ -147,51 +157,63 @@ class Accountant
             throw new AccountsException(self::ERR1);
         }
 
-        $txns = $txn->getEntries()->toArray();
-        $stmnt = $this->dbAdapter->query(
-            "select sa_fu_add_txn(?, ?, ?, ?, ?, ?, ?, ?) as txnId",
-            Adapter::QUERY_MODE_PREPARE
-        );
-
-        return new IntType(
-            $stmnt->execute(
-                [
-                    $this->chartId->get(),
-                    $txn->getNote()->get(),
-                    is_null($dateTime) ? $dateTime : $dateTime->format('Y-m-d h:m:s'),
-                    is_null($txn->getSrc()) ? null : $txn->getSrc()->get(),
-                    is_null($txn->getRef()) ? null: $txn->getRef()->get(),
-                    implode(
-                        ',',
-                        array_map(
-                            function(Entry $entry) {
-                                return $entry->getId()->get();
-                            },
-                            $txns
-                        )
-                    ),
-                    implode(
-                        ',',
-                        array_map(
-                            function(Entry $entry) {
-                                return $entry->getAmount()->get();
-                            },
-                            $txns
-                        )
-                    ),
-                    implode(
-                        ',',
-                        array_map(
-                            function(Entry $entry) {
-                                return $entry->getType()->getKey();
-                            },
-                            $txns
-                        )
-                    )
-                ]
-            )->current()['txnId']
-        );
-    }
+        return FFor::create(
+            [
+                'txn' => $txn,
+                'dateTime' => is_null($dateTime) ? $dateTime : $dateTime->format('Y-m-d h:m:s'),
+                'txns' => $txn->getEntries()->toArray(),
+                'dbAdapter' => $this->dbAdapter,
+                'chartId' => $this->chartId
+            ]
+        )
+            ->stmnt(function(Adapter $dbAdapter) {
+                return $dbAdapter->query(
+                    "select sa_fu_add_txn(?, ?, ?, ?, ?, ?, ?, ?) as txnId",
+                    Adapter::QUERY_MODE_PREPARE
+                );
+            })
+            ->write(function(StatementInterface $stmnt, $dateTime, SplitTransaction $txn, array $txns, IntType $chartId) {
+                return new IntType(
+                    $stmnt->execute(
+                        [
+                            $this->chartId->get(),
+                            $txn->getNote()->get(),
+                            $dateTime,
+                            is_null($txn->getSrc()) ? null : $txn->getSrc()->get(),
+                            is_null($txn->getRef()) ? null: $txn->getRef()->get(),
+                            implode(
+                                ',',
+                                array_map(
+                                    function(Entry $entry) {
+                                        return $entry->getId()->get();
+                                    },
+                                    $txns
+                                )
+                            ),
+                            implode(
+                                ',',
+                                array_map(
+                                    function(Entry $entry) {
+                                        return $entry->getAmount()->get();
+                                    },
+                                    $txns
+                                )
+                            ),
+                            implode(
+                                ',',
+                                array_map(
+                                    function(Entry $entry) {
+                                        return $entry->getType()->getKey();
+                                    },
+                                    $txns
+                                )
+                            )
+                        ]
+                    )->current()['txnId']
+                );
+            })
+            ->fyield('write');
+        }
 
     /**
      * Fetch a journal transaction identified by its journal id
@@ -202,32 +224,44 @@ class Accountant
      */
     public function fetchTransaction(IntType $jrnId)
     {
-        $journal = $this->dbAdapter->query('select * from sa_journal where id = ?')
-            ->execute([$jrnId])
-            ->getResource()->fetchAll(\PDO::FETCH_ASSOC);
-        $journal = array_pop($journal);
-        $entries = $this->dbAdapter->query('select * from sa_journal_entry where jrnId = ?')
-            ->execute([$jrnId()])
-            ->getResource()->fetchAll(\PDO::FETCH_ASSOC);
+        return FFor::create(
+            [
+                'jrnId' => $jrnId,
+                'dbAdapter' => $this->dbAdapter
+            ]
+        )
+            ->journal(function(IntType $jrnId, Adapter $dbAdapter) {
+                $journal = $dbAdapter->query('select * from sa_journal where id = ?')
+                    ->execute([$jrnId])
+                    ->getResource()->fetchAll(\PDO::FETCH_ASSOC);
+                return array_pop($journal);
+            })
+            ->entries(function(IntType $jrnId, Adapter $dbAdapter) {
+                return $dbAdapter->query('select * from sa_journal_entry where jrnId = ?')
+                    ->execute([$jrnId()])
+                    ->getResource()->fetchAll(\PDO::FETCH_ASSOC);
+            })
+            ->txn(function(array $journal, array $entries, IntType $jrnId) {
+                $txn = (new SplitTransaction(
+                    new StringType($journal['note']),
+                    new StringType($journal['src']),
+                    new IntType($journal['ref']),
+                    new \DateTime($journal['date'])
+                ))->setId($jrnId);
 
-        $txn = (new SplitTransaction(
-            new StringType($journal['note']),
-            new StringType($journal['src']),
-            new IntType($journal['ref']),
-            new \DateTime($journal['date'])
-        ))->setId($jrnId);
+                foreach ($entries as $entry) {
+                    $txn->addEntry(
+                        new Entry(
+                            new Nominal($entry['nominal']),
+                            new IntType($entry['acDr'] == 0 ? $entry['acCr'] : $entry['acDr']),
+                            ($entry['acDr'] == 0 ? AccountType::CR() : AccountType::DR())
+                        )
+                    );
+                }
 
-        foreach ($entries as $entry) {
-            $txn->addEntry(
-                new Entry(
-                    new Nominal($entry['nominal']),
-                    new IntType($entry['acDr'] == 0 ? $entry['acCr'] : $entry['acDr']),
-                    ($entry['acDr'] == 0 ? AccountType::CR() : AccountType::DR())
-                )
-            );
-        }
-
-        return $txn;
+                return $txn;
+            })
+            ->fyield('txn');
     }
 
     /**
@@ -242,50 +276,61 @@ class Accountant
      */
     public function fetchAccountJournals(Nominal $nominal)
     {
-        $sql = new Sql($this->dbAdapter);
-        $select = $sql->select(['j' => 'sa_journal'])
-            ->join(
-                ['e' => 'sa_journal_entry'],
-                'j.id = e.jrnId',
-                ['nominal', 'acDr', 'acCr']
-            )
-            ->columns(['id', 'note', 'date', 'src', 'ref'])
-            ->where(
-                [
-                    'e.nominal' => $nominal(),
-                    'j.chartId' => $this->chartId->get()
-                ]
-            );
+        return FFor::create(
+            [
+                'dbAdapter' => $this->dbAdapter,
+                'nominal' => $nominal
+            ]
+        )
+            ->sql(function(Adapter $dbAdapter) {return new Sql($dbAdapter);})
+            ->select(function(Sql $sql, Nominal $nominal) {
+                return $sql->select(['j' => 'sa_journal'])
+                    ->join(
+                        ['e' => 'sa_journal_entry'],
+                        'j.id = e.jrnId',
+                        ['nominal', 'acDr', 'acCr']
+                    )
+                    ->columns(['id', 'note', 'date', 'src', 'ref'])
+                    ->where(
+                        [
+                            'e.nominal' => $nominal(),
+                            'j.chartId' => $this->chartId->get()
+                        ]
+                    );
+            })
+            ->entries(function(Adapter $dbAdapter, Sql $sql, Select $select) {
+                return $dbAdapter->query($sql->buildSqlString($select))
+                    ->execute()
+                    ->getResource()
+                    ->fetchAll(\PDO::FETCH_ASSOC);
+            })
+            ->build(function(array $entries) {
+                $transactions = [];
+                $jrnId = new IntType(-1);
+                foreach ($entries as $entry) {
+                    if ($entry['id'] != $jrnId()) {
+                        $jrnId = new IntType($entry['id']);
+                        $txn = new SplitTransaction(
+                            new StringType($entry['note']),
+                            new StringType($entry['src']),
+                            new IntType($entry['ref']),
+                            new \DateTime($entry['date'])
+                        );
+                        $txn->setId($jrnId);
+                        $transactions[] = $txn;
+                    }
+                    $txn->addEntry(
+                        new Entry(
+                            new Nominal($entry['nominal']),
+                            new IntType(empty($entry['acDr']) ? $entry['acCr'] : $entry['acDr']),
+                            empty($entry['acDr']) ? AccountType::CR() : AccountType::DR()
+                        )
+                    );
+                }
 
-        $entries = $this->dbAdapter->query($sql->buildSqlString($select))
-            ->execute()
-            ->getResource()
-            ->fetchAll(\PDO::FETCH_ASSOC);
-
-        $transactions = [];
-        $jrnId = new IntType(-1);
-        foreach ($entries as $entry) {
-            if ($entry['id'] != $jrnId()) {
-                $jrnId = new IntType($entry['id']);
-                $txn = new SplitTransaction(
-                    new StringType($entry['note']),
-                    new StringType($entry['src']),
-                    new IntType($entry['ref']),
-                    new \DateTime($entry['date'])
-                );
-                $txn->setId($jrnId);
-                $transactions[] = $txn;
-            }
-            $txn->addEntry(
-                new Entry(
-                    new Nominal($entry['nominal']),
-                    new IntType(empty($entry['acDr']) ? $entry['acCr'] : $entry['acDr']),
-                    empty($entry['acDr']) ? AccountType::CR() : AccountType::DR()
-                )
-            );
-        }
-
-        return new Set($transactions, SplitTransaction::class);
+                return new Set($transactions, SplitTransaction::class);
+            })
+            ->fyield('build');
     }
 
 
@@ -438,16 +483,26 @@ class Accountant
      */
     protected function storeChart(Chart $chart)
     {
-        $name = $chart->getName()->get();
-        $res = $this->dbAdapter->query(
-            "select sa_fu_add_chart('{$name}')",
-            Adapter::QUERY_MODE_EXECUTE
-        )->current()->getArrayCopy();
-        $chartId = new IntType(array_pop($res));
-        $root = $chart->getTree();
+        return FFor::create(
+            [
+                'chart' => $chart,
+                'root' => $chart->getTree(),
+                'dbAdapter' => $this->dbAdapter
+            ]
+        )
+            ->chartId(function(Chart $chart, Adapter $dbAdapter) {
+                $res = $dbAdapter->query(
+                    "select sa_fu_add_chart('{$chart->getName()->get()}')",
+                    Adapter::QUERY_MODE_EXECUTE
+                )
+                    ->current()
+                    ->getArrayCopy();
 
-        $root->accept(new NodeSaver($chartId, $this->dbAdapter));
-
-        return $chartId;
+                return new IntType(array_pop($res));
+            })
+            ->build(function(Node $root, IntType $chartId, Adapter $dbAdapter) {
+                $root->accept(new NodeSaver($chartId, $this->dbAdapter));
+            })
+            ->fyield('chartId');
     }
 }
