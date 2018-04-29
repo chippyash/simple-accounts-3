@@ -3,6 +3,8 @@
 ## Quality Assurance
 
 ![PHP 5.6](https://img.shields.io/badge/PHP-5.6-blue.svg)
+![PHP 7.0](https://img.shields.io/badge/PHP-7.0-blue.svg)
+![PHP 7.1](https://img.shields.io/badge/PHP-7.1-blue.svg)
 ![MariaDb 10.0](https://img.shields.io/badge/MariaDb-10.0-blue.svg)
 [![Build Status](https://travis-ci.org/chippyash/simple-accounts-3.svg?branch=master)](https://travis-ci.org/chippyash/simple-accounts-3)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5811a42ebda892357fba/test_coverage)](https://codeclimate.com/github/chippyash/simple-accounts-3/test_coverage)
@@ -46,9 +48,6 @@ a pull request.  The library is developed under Linux.
 ## How
 
 ### Getting it up and running
-
-Run composer.phar install to load in the PHP dependencies.  Sorry, but PHP ~5.6 only.
-PHP 7 isn't tested yet, you'll see a badge in Quality Assurance when it is. (If you want to help, please contact me)
 
 Create a database, let's say 'test'.
 
@@ -549,7 +548,7 @@ Or - raise an issue ticket.
 The library is hosted at [Github](https://github.com/chippyash/simple-accounts-3). It is
 available at [Packagist.org](https://packagist.org/packages/chippyash/simple-accounts-3)
 
-### Installation
+### Installation (PHP)
 
 Install [Composer](https://getcomposer.org/)
 
@@ -559,6 +558,8 @@ Install [Composer](https://getcomposer.org/)
     "chippyash/simple-accounts-3": "~1.0"
 </pre>
  
+`composer install --no-dev`
+
 #### For development
 
 Clone this repo, and then run Composer in local repo root to pull in dependencies
@@ -599,3 +600,5 @@ V1.0.1 Documentation for first release
 V1.1.0 Add PHP Doctrine Migrations
 
 V1.1.1 Change namespace for migrations
+
+V1.1.2 Support PHP 7.0 & 7.1
