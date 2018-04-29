@@ -549,7 +549,7 @@ Finally, if in doubt, read the source code. It's well documented.
 
 [Test Contract](https://github.com/chippyash/simple-accounts-3/blob/master/docs/Test-Contract.md) in the docs directory.
 
-This library makes extensive use of the tried and tested [StongType](https://github.com/chippyash/strong-type) library
+This library makes extensive use of the tried and tested [StrongType](https://github.com/chippyash/strong-type) library
 
 It also employs a great deal of functional programming derived from the [Monad](https://github.com/chippyash/monad)
 and [Assembly](https://github.com/chippyash/Assembly-Builder) libraries. 
