@@ -549,6 +549,17 @@ Finally, if in doubt, read the source code. It's well documented.
 
 [Test Contract](https://github.com/chippyash/simple-accounts-3/blob/master/docs/Test-Contract.md) in the docs directory.
 
+This library makes extensive use of the tried and tested [StongType](https://github.com/chippyash/strong-type) library
+
+It also employs a great deal of functional programming derived from the [Monad](https://github.com/chippyash/monad)
+and [Assembly](https://github.com/chippyash/Assembly-Builder) libraries. 
+
+If you are unfamiliar with them, please take a moment to study them. 
+
+As the library only deals with integers as values (to ensure numerical accuracy) you 
+may want to have a look at the [Currency](https://github.com/chippyash/currency) library 
+that is used in the example scripts.
+
 Check out [ZF4 Packages](http://zf4.biz/packages?utm_source=github&utm_medium=web&utm_campaign=blinks&utm_content=simpleaccounts3) for more packages
 
 ## Changing the library
