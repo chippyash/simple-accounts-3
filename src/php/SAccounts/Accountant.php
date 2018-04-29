@@ -10,6 +10,7 @@ namespace SAccounts;
 
 use Chippyash\Type\Number\IntType;
 use Chippyash\Type\String\StringType;
+use Monad\Set;
 use PDOException;
 use Zend\Db\Adapter\Adapter;
 use Assembler\FFor;
@@ -18,6 +19,8 @@ use SAccounts\Visitor\NodeSaver;
 use SAccounts\Transaction\SplitTransaction;
 use SAccounts\Transaction\Entry;
 use Zend\Db\Adapter\Exception\InvalidQueryException;
+use Zend\Db\Sql\Select;
+use Zend\Db\Sql\Sql;
 
 class Accountant
 {
@@ -226,6 +229,65 @@ class Accountant
 
         return $txn;
     }
+
+    /**
+     * Fetch journal entries for an account
+     *
+     * The returned Set is a Set of SplitTransactions with only the entries for
+     * the required Account.  They will therefore be unbalanced.
+     *
+     * @param Nominal $nominal
+     *
+     * @return Set
+     */
+    public function fetchAccountJournals(Nominal $nominal)
+    {
+        $sql = new Sql($this->dbAdapter);
+        $select = $sql->select(['j' => 'sa_journal'])
+            ->join(
+                ['e' => 'sa_journal_entry'],
+                'j.id = e.jrnId',
+                ['nominal', 'acDr', 'acCr']
+            )
+            ->columns(['id', 'note', 'date', 'src', 'ref'])
+            ->where(
+                [
+                    'e.nominal' => $nominal(),
+                    'j.chartId' => $this->chartId->get()
+                ]
+            );
+
+        $entries = $this->dbAdapter->query($sql->buildSqlString($select))
+            ->execute()
+            ->getResource()
+            ->fetchAll(\PDO::FETCH_ASSOC);
+
+        $transactions = [];
+        $jrnId = new IntType(-1);
+        foreach ($entries as $entry) {
+            if ($entry['id'] != $jrnId()) {
+                $jrnId = new IntType($entry['id']);
+                $txn = new SplitTransaction(
+                    new StringType($entry['note']),
+                    new StringType($entry['src']),
+                    new IntType($entry['ref']),
+                    new \DateTime($entry['date'])
+                );
+                $txn->setId($jrnId);
+                $transactions[] = $txn;
+            }
+            $txn->addEntry(
+                new Entry(
+                    new Nominal($entry['nominal']),
+                    new IntType(empty($entry['acDr']) ? $entry['acCr'] : $entry['acDr']),
+                    empty($entry['acDr']) ? AccountType::CR() : AccountType::DR()
+                )
+            );
+        }
+
+        return new Set($transactions, SplitTransaction::class);
+    }
+
 
     /**
      * Add an account (ledger) to the chart

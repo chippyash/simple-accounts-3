@@ -40,6 +40,9 @@ testSuiteLoaderFile="/path/to/StandardTestSuiteLoader.php"
         <whitelist processUncoveredFilesFromWhitelist="true">
             <directory suffix=".php">./src/php/SAccounts</directory>
             <exclude>
+                <directory suffix=".php">./examples</directory>
+                <directory suffix=".php">./src/php/SAccounts/Doctrine</directory>
+                <file>./doctrine-db.php</file>
             </exclude>
         </whitelist>
     </filter>

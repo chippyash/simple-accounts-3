@@ -382,6 +382,22 @@ $exists = $chart->hasAccount(new Nominal('3000'));
 //get the name of the COA
 /* @var StringType $name */
 $name = $chart->getName();
+
+//get a ledger's values
+$account = $chart->getAccount(new Nominal('2000'));
+/* @var IntType $dr */
+$dr = $account->dr();
+/* @var IntType $cr */
+$cr = $account->cr();
+/* @var IntType $balance */
+$balance = $account->getBalance();
+/* @var Nominal $nom */
+$nom = $account->getNominal();
+/* @var StringType $name */
+$name = $account->getName();
+/* @var AccountType $type */
+$type = $account->getType();
+
 </pre>
 
 ##### The COA as a Tree
@@ -506,7 +522,15 @@ You retrieve a single transaction from the accounts with
 $txn = $accountant->fetchTransaction(new IntType(102));
 </pre>
 
-Retrieving all entries for an Account: TBC - functionality in next feature release.
+To retrieve all entries for an account ledger:
+<pre>
+/** @var Monad\Set $transactions */
+$transactions = $accountant->fetchAccountJournals(new Nominal('2000'));
+</pre>
+
+The Set contains SplitTransactions with Entries reflecting only the side of the
+double entry that the transaction acted up for that journal entry.  You can see an
+example of how this works in `examples/journal-entries-example.php`.
 
 ## Notes
 
@@ -605,3 +629,5 @@ V1.1.1 Change namespace for migrations
 V1.1.2 Support PHP 7.0 & 7.1
 
 V1.1.3 Support PHP 7.2
+
+V1.2.0 Add ability to retrieve all transactions for an account

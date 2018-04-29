@@ -10,6 +10,7 @@
 namespace Test\SAccounts;
 
 use Chippyash\Type\Number\IntType;
+use Monad\Set;
 use SAccounts\Accountant;
 use Chippyash\Type\String\StringType;
 use SAccounts\AccountType;
@@ -261,6 +262,51 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
         $txn = new SimpleTransaction(new Nominal('2110'), new Nominal('3100'),new IntType(1226));
         $this->sut->writeTransaction($txn);
         $this->sut->delAccount($nominal);
+    }
+
+    public function testYouCanFetchJournalEntriesForAnAccount()
+    {
+        $this->createChart();
+        $this->sut->writeTransaction(
+            new SimpleTransaction(
+                new Nominal('2110'), new Nominal('3100'),new IntType(1226)
+            )
+        );
+        $this->sut->writeTransaction(
+            new SimpleTransaction(
+                new Nominal('3100'), new Nominal('2110'),new IntType(1000)
+            )
+        );
+        $entries = $this->sut->fetchAccountJournals(new Nominal('3100'));
+
+        $this->assertEquals(2, $entries->count());
+    }
+
+    public function testFetchingJournalEntriesReturnsASetOfSplitTransactions()
+    {
+        $this->createChart();
+        $this->sut->writeTransaction(
+            new SimpleTransaction(
+                new Nominal('2110'), new Nominal('3100'),new IntType(1226)
+            )
+        );
+        $entries = $this->sut->fetchAccountJournals(new Nominal('3100'));
+
+        $this->assertInstanceOf(Set::class, $entries);
+        $this->assertInstanceOf(SplitTransaction::class, $entries[0]);
+    }
+
+    public function testFetchingJournalEntriesForAnAggregateAccountWillReturnAnEmptySet()
+    {
+        $this->createChart();
+        $this->sut->writeTransaction(
+            new SimpleTransaction(
+                new Nominal('2110'), new Nominal('3100'),new IntType(1226)
+            )
+        );
+        $entries = $this->sut->fetchAccountJournals(new Nominal('3000'));
+
+        $this->assertEquals(0, $entries->count());
     }
 
     protected function createChart()

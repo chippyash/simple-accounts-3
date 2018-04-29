@@ -24,17 +24,20 @@
 
 ## SAccounts\Accountant
 
-*  ❌ An accountant can create a new chart of accounts
-*  ❌ An accountant can fetch a chart
-*  ❌ Fetching a chart when chart id is not set will throw an exception
-*  ❌ You can write a transaction to a journal and update a chart
-*  ❌ Writing a transaction when chart id is not set will throw an exception
-*  ❌ You can fetch a journal transaction by its id
-*  ❌ You can add an account to a chart
-*  ❌ Adding an account to a non existent parent will throw an exception
-*  ❌ Trying to add a second root account will throw an exception
-*  ❌ You can delete a zero balance account
-*  ❌ Deleting a non zero balance account will throw an exception
+*  ✓ An accountant can create a new chart of accounts
+*  ✓ An accountant can fetch a chart
+*  ✓ Fetching a chart when chart id is not set will throw an exception
+*  ✓ You can write a transaction to a journal and update a chart
+*  ✓ Writing a transaction when chart id is not set will throw an exception
+*  ✓ You can fetch a journal transaction by its id
+*  ✓ You can add an account to a chart
+*  ✓ Adding an account to a non existent parent will throw an exception
+*  ✓ Trying to add a second root account will throw an exception
+*  ✓ You can delete a zero balance account
+*  ✓ Deleting a non zero balance account will throw an exception
+*  ✓ You can fetch journal entries for an account
+*  ✓ Fetching journal entries returns a set of split transactions
+*  ✓ Fetching journal entries for an aggregate account will return an empty set
 
 ## SAccounts\ChartDefinition
 
