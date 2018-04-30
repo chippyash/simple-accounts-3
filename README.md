@@ -619,14 +619,17 @@ This software library is released under the [GNU GPL V3 or later license](http:/
 
 This software library is Copyright (c) 2017-2018, Ashley Kitson, UK
 
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons Licence" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This documentation is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
+
 A commercial license is available for this software library, please contact the author. 
 It is normally free to deserving causes, but gets you around the limitation of the GPL
 license, which does not allow unrestricted inclusion of this code in commercial works.
 
+## Sponsors
+
 This library is supported by <a href="https://www.jetbrains.com"><img src="https://github.com/chippyash/Strong-Type/raw/master/img/JetBrains.png" alt="Jetbrains" style="height: 200px;vertical-align: middle;"></a>
 who provide their IDEs to Open Source developers.
 
-<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons Licence" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This documentation is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
 
 ## History
 
