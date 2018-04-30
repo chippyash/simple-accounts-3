@@ -20,7 +20,7 @@ before_script:
   - sudo apt-get install mariadb-oqgraph-engine-10.0
   - sudo mysql < ./scripts/oqgraph.sql
   - sudo mysql < ./scripts/test-user.sql
-  - ./createdb.sh test test test
+  - ./createmariadb.sh test test test
   - composer install --no-interaction
   - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
   - chmod +x ./cc-test-reporter

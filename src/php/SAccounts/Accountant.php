@@ -282,11 +282,12 @@ class Accountant
         return FFor::create(
             [
                 'dbAdapter' => $this->dbAdapter,
-                'nominal' => $nominal
+                'nominal' => $nominal,
+                'chartId' => $this->chartId
             ]
         )
             ->sql(function(Adapter $dbAdapter) {return new Sql($dbAdapter);})
-            ->select(function(Sql $sql, Nominal $nominal) {
+            ->select(function(Sql $sql, Nominal $nominal, IntType $chartId) {
                 return $sql->select(['j' => 'sa_journal'])
                     ->join(
                         ['e' => 'sa_journal_entry'],
@@ -297,7 +298,7 @@ class Accountant
                     ->where(
                         [
                             'e.nominal' => $nominal(),
-                            'j.chartId' => $this->chartId->get()
+                            'j.chartId' => $chartId()
                         ]
                     );
             })

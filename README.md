@@ -35,6 +35,14 @@ as game points translated into real world value for the customer by way of disco
 and prizes.
 
 ## Requirements
+
+Support in this application is given for 2 flavours of SQL, MariaDb and MySql.
+
+### MariaDb
+
+The MariaDb utilises a high performance plugin that greatly simplifies dealing with
+hierarchical data.
+
 You will need MariaDB >=10 with the [OQGraph plugin](https://mariadb.com/kb/en/library/oqgraph-storage-engine/)
 installed. Take a look at the `.travis.yml` build script for how we do this on the
 Travis build servers.  One 'gotcha' that we know about is the setting of the user
@@ -43,8 +51,24 @@ creation script user 'SUPER' privileges.  There seems no rhyme nor reason as to 
 is, but be aware.  For MariaDb 10 on the travis servers, it needs setting. See 
 `scripts/test-user.sql` 
 
-No Windows support is provided at present.  If you want it, please feel free to make
-a pull request.  The library is developed under Linux.
+### MySql
+
+Recognising that not everyone is able to utilise the MariaDb advantage, I have provided
+an alternate database implementation for plain MySql that utilises Nested Sets.  See
+[Mike Hillyer's blog](http://mikehillyer.com/articles/managing-hierarchical-data-in-mysql/)
+for the basis of its implementation.
+
+Please note that this is not as performant as the MariaDb solution.  Take a look at the 
+stored procedure definitions for each DB to see the reason why.  If you can, use MariaDb.
+If you can get the MySql code more performant, submit a pull request!
+ 
+Postgres users should be able to adapt the MySql code to implement the database. I rarely
+use it, so no direct support is given in this library. If you want to contribute the
+Postgres SQL statements, please feel free to provide a pull request.  It would be
+welcome.
+ 
+No Windows variant support is provided at present.  If you want it, please feel free 
+to make a pull request.  The library is developed under Linux.
 
 ## How
 
@@ -58,7 +82,14 @@ to do this.)
 Give that user all rights to the test database. (see note above re SUPER privs)
 
 Now run the create script:
-`./createdb.sh test test test` 
+
+For MariaDb:
+
+`./createmariaddb.sh test test test` 
+
+For MySql:
+
+`./createmysqldb.sh test test test`
 
 to create the database components. NB - PHP Doctrine Migration users should read the
 PHP code basic section to utilise the supplied migrations.
@@ -178,16 +209,15 @@ is a principle defence for double entry book keeping.
    
 ### Coding Basics (SQL)
 As mentioned elsewhere, the fundamentals of this library lay in the SQL code, which
-runs on MariaDb with the OQGraph plugin installed.  OQGraph provides a very fast and
-efficient way of using hierarchical data within an RDMS.  The alternative is to use
-some [nested set strategy](http://mikehillyer.com/articles/managing-hierarchical-data-in-mysql/)
-which can of course be done, but slows down the whole operation.  If you fancy doing 
-a plain nested set implementation, please consider contributing to this library.
+runs on MariaDb with the OQGraph plugin installed or MySql.
 
 The SQL API is provided via stored procedures.  If you want to provide variants, please
-respect the API.  You can see the procedure definitions in the [src/sql/build-procs](https://github.com/chippyash/simple-accounts-3/blob/master/src/sql/build-procs.sql)
-script and the trigger that maintains the account balances in the [src/sql/build-triggers](https://github.com/chippyash/simple-accounts-3/blob/master/src/sql/build-triggers.sql)
-script.
+respect the API.  
+
+For MariaDb see:
+ - the procedure definitions in the [src/sql/mariadb/build-procs](https://github.com/chippyash/simple-accounts-3/blob/master/src/sql/mariadb/build-procs.sql)
+ - the trigger that maintains the account balances in the [src/sql/mariadb/build-triggers](https://github.com/chippyash/simple-accounts-3/blob/master/src/sql/mariadb/build-triggers.sql)
+   script.
 
 One slightly baffling procedure is `sa_fu_add_txn`. In particular the parameters, 
 - arNominals TEXT,
@@ -206,6 +236,12 @@ See test/sql/add_transaction_test.sql circa L17 for how the SQL proc is called n
  
 Otherwise the SQL is pretty straight forward.  Study the OQGraph
 docs for an understanding of how it's being used. Magic underneath, but simple to use - my kind of code ;-) 
+
+For MySql see:
+ - the procedure definitions in the [src/sql/mysql/build-procs](https://github.com/chippyash/simple-accounts-3/blob/master/src/sql/mysql/build-procs.sql)
+ - the trigger that maintains the account balances in the [src/sql/mysql/build-triggers](https://github.com/chippyash/simple-accounts-3/blob/master/src/sql/mysql/build-triggers.sql)
+   script.
+
 
 If you are a better SQL Head than me (not hard!), then I'd appreciate any suggestions
 for operational efficiency.

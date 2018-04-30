@@ -1,4 +1,4 @@
-# Build script for simple accounts database
+# Build script for simple accounts database - MariaDb/OQGraph Variant
 # Copyright, 2018, Ashley Kitson, UK
 # License: GPL V3+, see License.md
 DELIMITER //

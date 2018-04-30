@@ -1,9 +1,8 @@
-# Build script for simple accounts database
+# Build script for simple accounts database - MySql variant
 # Copyright, 2018, Ashley Kitson, UK
 # License: GPL V3+, see License.md
 
 DROP TABLE IF EXISTS sa_coa_ledger;
-DROP TABLE IF EXISTS sa_coa_graph;
 DROP TABLE IF EXISTS sa_journal_entry;
 DROP TABLE IF EXISTS sa_journal;
 DROP TABLE IF EXISTS sa_coa;
@@ -56,7 +55,9 @@ CREATE TABLE `sa_coa` (
 
 CREATE TABLE `sa_coa_ledger` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'internal ledger id',
-  `prntId` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'internal id of parent account',
+  `prntId` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'parent node internal id',
+  `lft` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'left node internal id',
+  `rgt` int(10) unsigned NOT NULL DEFAULT 0 COMMENT 'node node internal id',
   `chartId` int(10) unsigned DEFAULT NULL COMMENT 'id of chart that this account belongs to',
   `nominal` char(10) NOT NULL COMMENT 'nominal id for this account',
   `type` varchar(10) DEFAULT NULL COMMENT 'type of account',
@@ -67,22 +68,11 @@ CREATE TABLE `sa_coa_ledger` (
   UNIQUE KEY `sa_coa_ledger_chartId_nominal_index` (`chartId`,`nominal`),
   KEY `sa_coa_ledger_sa_ac_type_type_fk` (`type`),
   KEY `sa_coa_ledger_sa_coa_fk` (`chartId`),
+  INDEX `sa_coa_ledger_lft_idx` (`lft`),
+  INDEX `sa_coa_ledger_rgt_idx` (`rgt`),
   CONSTRAINT `sa_coa_ledger_sa_ac_type_type_fk` FOREIGN KEY (`type`) REFERENCES `sa_ac_type` (`type`)  ON DELETE CASCADE,
   CONSTRAINT `sa_coa_ledger_sa_coa_fk` FOREIGN KEY (`chartId`) REFERENCES `sa_coa` (`id`)  ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Chart of Account structure';
-
-CREATE TABLE `sa_coa_graph` (
-  `latch` varchar(32) DEFAULT NULL,
-  `origid` bigint(20) unsigned DEFAULT NULL,
-  `destid` bigint(20) unsigned DEFAULT NULL,
-  `weight` double DEFAULT NULL,
-  `seq` bigint(20) unsigned DEFAULT NULL,
-  `linkid` bigint(20) unsigned DEFAULT NULL,
-  KEY `latch` (`latch`,`origid`,`destid`) USING HASH,
-  KEY `latch_2` (`latch`,`destid`,`origid`) USING HASH
-) ENGINE=OQGRAPH
-  DEFAULT CHARSET=utf8 `data_table`='sa_coa_ledger' `origid`='prntId' `destid`='id'
-  COMMENT 'oqgraph linking table';
 
 CREATE TABLE `sa_journal` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'internal id of the journal',
