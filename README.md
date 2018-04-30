@@ -626,6 +626,7 @@ license, which does not allow unrestricted inclusion of this code in commercial 
 This library is supported by <a href="https://www.jetbrains.com"><img src="https://github.com/chippyash/Strong-Type/raw/master/img/JetBrains.png" alt="Jetbrains" style="height: 200px;vertical-align: middle;"></a>
 who provide their IDEs to Open Source developers.
 
+<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons Licence" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This documentation is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
 
 ## History
 
@@ -642,3 +643,5 @@ V1.1.2 Support PHP 7.0 & 7.1
 V1.1.3 Support PHP 7.2
 
 V1.2.0 Add ability to retrieve all transactions for an account
+
+V1.2.1 docs licenses update
