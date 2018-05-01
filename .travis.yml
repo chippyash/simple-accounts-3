@@ -24,13 +24,11 @@ before_install:
   - if [[ "$DB" = "mariadb" && 5.6 = $PHPVER ]]; then curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter; fi;
   - if [[ "$DB" = "mariadb" && 5.6 = $PHPVER ]]; then chmod +x ./cc-test-reporter; fi;
 
-install:
-  - if [[ "$DB" = "mariadb" ]]; then ./scripts/travis.install.mariadb.sh; fi;
-  - if [[ "$DB" = "mysql" ]]; then ./scripts/travis.install.mysql.sh; fi;
-
 before_script:
   - mkdir -p build/logs
   - composer install --no-interaction
+  - if [[ "$DB" = "mariadb" ]]; then ./scripts/travis.install.mariadb.sh; fi;
+  - if [[ "$DB" = "mysql" ]]; then ./scripts/travis.install.mysql.sh; fi;
   - if [[ "$DB" = "mariadb" && 5.6 = $PHPVER ]]; then ./cc-test-reporter before-build; fi;
 
 script:
