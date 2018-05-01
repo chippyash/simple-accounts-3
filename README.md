@@ -197,7 +197,7 @@ infinite number of COAs, so it shouldn't be too much of a problem.
 
 #### Doctrine Migrations
 
-If you are using Doctrine Migrations, you can take advantage of the supplied migration 
+If you are using Doctrine Migrations and Mariadb, you can take advantage of the supplied migration 
 files in `src\php\SAccounts\Doctrine`.
 
 For development of this library you can migrate up the required DB structure into the 

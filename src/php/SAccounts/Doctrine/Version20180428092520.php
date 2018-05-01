@@ -30,7 +30,7 @@ class Version20180428092520 extends AbstractMigration
         parent::__construct($version);
         $this->connection->getDatabasePlatform()
             ->registerDoctrineTypeMapping('enum', 'string');
-        $this->sqlSrcDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/sql';
+        $this->sqlSrcDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/sql/mariadb';
     }
 
     /**
