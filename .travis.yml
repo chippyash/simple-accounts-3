@@ -39,6 +39,13 @@ script:
 after_success:
   - if [ "$DB" = "mysql" && 5.6 = $PHPVER ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi;
 
+jobs:
+  include:
+    - stage: Test
+      env: DB=mariadb
+      addons:
+        mariadb: 10.0
+
 # configure notifications (email, IRC, campfire etc)
 notifications:
   email: "ashley@zf4.biz"
