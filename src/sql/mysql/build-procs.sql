@@ -15,6 +15,7 @@ MODIFIES SQL DATA DETERMINISTIC
     RETURN last_insert_id();
   END;
 //
+
 DROP PROCEDURE IF EXISTS sa_sp_add_ledger;
 CREATE DEFINER = CURRENT_USER PROCEDURE
   sa_sp_add_ledger(
@@ -119,6 +120,7 @@ MODIFIES SQL DATA DETERMINISTIC
     END IF;
   END;
 //
+
 DROP PROCEDURE IF EXISTS sa_sp_del_ledger;
 CREATE DEFINER = CURRENT_USER PROCEDURE
   sa_sp_del_ledger(
@@ -152,6 +154,7 @@ MODIFIES SQL DATA DETERMINISTIC
     WHERE id = accId;
   END;
 //
+
 DROP FUNCTION IF EXISTS sa_fu_add_txn;
 CREATE DEFINER = CURRENT_USER FUNCTION
   sa_fu_add_txn(
@@ -211,32 +214,19 @@ CREATE DEFINER = CURRENT_USER PROCEDURE
   chartId INT(10) UNSIGNED
 )
 READS SQL DATA
-  BEGIN
-    SELECT
-      origid,
-      destid,
-      l3.nominal,
-      l3.name,
-      l3.type,
-      l3.acDr,
-      l3.acCr
-    from sa_coa_graph
-      LEFT JOIN sa_coa_ledger as l1 ON origid = l1.id
-      LEFT JOIN sa_coa_ledger as l3 ON destid = l3.id
-    WHERE l1.chartId = chartId
-    UNION
-    SELECT
-      0          as origid,
-      min(l2.id) as destid,
-      l2.nominal,
-      l2.name,
-      l2.type,
-      l2.acDr,
-      l2.acCr
-    FROM sa_coa_ledger as l2
-    WHERE l2.chartId = chartId
-    ORDER BY origid, destid;
-  END;
+BEGIN
+  SELECT
+    prntId as origid,
+    id as destid,
+    nominal,
+    name,
+    type,
+    acDr,
+    acCr
+  FROM sa_coa_ledger
+  WHERE `chartId` = chartId
+  ORDER BY origid, destid;
+END;
 //
 DELIMITER ;
 

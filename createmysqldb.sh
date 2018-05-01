@@ -11,8 +11,8 @@ DBUID=$2
 DBPWD=$3
 
 echo "building tables"
-#cat ./src/sql/mysql/build-tables.sql | mysql -u $DBUID -p$DBPWD $DBNAME
+cat ./src/sql/mysql/build-tables.sql | mysql -u $DBUID -p$DBPWD $DBNAME
 echo "building procs and functions"
 cat ./src/sql/mysql/build-procs.sql | mysql -u $DBUID -p$DBPWD $DBNAME
 echo "building triggers"
-#cat ./src/sql/mysql/build-triggers.sql | mysql -u $DBUID -p$DBPWD $DBNAME
+cat ./src/sql/mysql/build-triggers.sql | mysql -u $DBUID -p$DBPWD $DBNAME
