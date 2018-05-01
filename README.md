@@ -7,7 +7,7 @@
 ![PHP 7.1](https://img.shields.io/badge/PHP-7.1-blue.svg)
 ![PHP 7.2](https://img.shields.io/badge/PHP-7.2-blue.svg)
 ![MariaDb 10.0](https://img.shields.io/badge/MariaDb-10.0-blue.svg)
-![MySql 5.7](https://img.shields.io/badge/MySql-5.7-blue.svg)
+![MySql 5.6](https://img.shields.io/badge/MySql-5.6-blue.svg)
 [![Build Status](https://travis-ci.org/chippyash/simple-accounts-3.svg?branch=master)](https://travis-ci.org/chippyash/simple-accounts-3)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5811a42ebda892357fba/test_coverage)](https://codeclimate.com/github/chippyash/simple-accounts-3/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5811a42ebda892357fba/maintainability)](https://codeclimate.com/github/chippyash/simple-accounts-3/maintainability)
@@ -619,3 +619,5 @@ V1.1.3 Support PHP 7.2
 V1.2.0 Add ability to retrieve all transactions for an account
 
 V1.2.1 docs licenses update
+
+V1.3.0 Support for MySql
