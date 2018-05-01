@@ -621,3 +621,5 @@ V1.2.0 Add ability to retrieve all transactions for an account
 V1.2.1 docs licenses update
 
 V1.3.0 Support for MySql
+
+V1.3.1 File path amend for mariadb migration
