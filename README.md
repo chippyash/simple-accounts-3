@@ -52,6 +52,9 @@ creation script user 'SUPER' privileges.  There seems no rhyme nor reason as to 
 is, but be aware.  For MariaDb 10 on the travis servers, it needs setting. See 
 `scripts/test-user.sql` 
 
+If for some reason you cannot use the OQGraph plugin, please follow the instructions 
+for MySql.  It will work in MariaDb as well.
+
 ### MySql
 
 Recognising that not everyone is able to utilise the MariaDb advantage, I have provided
