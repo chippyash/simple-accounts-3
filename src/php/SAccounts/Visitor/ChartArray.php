@@ -64,12 +64,9 @@ class ChartArray implements Visitor
                     : $this->crcy->set($ac->cr()->get())->getAsFloat();
             })
             ->balance(function($ac){
-                return $ac->getType()->equals(AccountType::REAL())
-                    ? ($this->asInt ? 0 : 0.00)
-                    : ($this->asInt
+                return $this->asInt
                     ? $ac->getBalance()->get()
-                    : $this->crcy->set($ac->getBalance()->get())->getAsFloat()
-                );
+                    : $this->crcy->set($ac->getBalance()->get())->getAsFloat();
             })
             ->loop(function($dr, $cr, $balance, $ac, $node, $ret) {
                 $ret[] = [

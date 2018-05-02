@@ -52,7 +52,7 @@ class ChartPrinter implements Visitor
         $name = str_pad($ac->getName(), 20);
         $dr = str_pad($this->crcy->set($ac->dr()->get())->display(), 15, ' ', STR_PAD_LEFT);
         $cr = str_pad($this->crcy->set($ac->cr()->get())->display(), 15, ' ', STR_PAD_LEFT);
-        $balStr = ($ac->getType()->equals(AccountType::REAL()) ? $this->crcy->set(0)->display() : $this->crcy->set($ac->getBalance()->get())->display());
+        $balStr = $this->crcy->set($ac->getBalance()->get())->display();
         $balance = str_pad($balStr, 15, ' ', STR_PAD_LEFT);
         echo "{$nominal}{$name}{$dr}{$cr}{$balance}\n";
 

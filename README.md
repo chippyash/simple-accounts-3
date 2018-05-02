@@ -647,3 +647,5 @@ V1.2.1 docs licenses update
 V1.3.0 Support for MySql
 
 V1.3.1 File path amend for mariadb migration
+
+V1.3.2 Remove ambiguity for treatment of real account balances
