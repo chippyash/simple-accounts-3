@@ -312,11 +312,27 @@ It controls how the balance on the Account is derived.  It also allows you to di
 appropriate labels for the debit and credit values on an account. Take a look at the 
 `src\xml\personal.xml` file for an example of how AccountTypes are used.
 
+Under typical circumstances, the root account is a REAL account, and has two children,
+the Balance Sheet (type DR) and the Profit & Loss (type CR).  All other accounts are
+children of these two.  There is however nothing stopping you configuring your chart
+as you wish.
+
+All DR (debit) type accounts derive their balance as dr amount - cr amount.  All CR (credit)
+type accounts derive their baslance as cr amount - dr amount. REAL accounts derive their
+balance as abs(cr amount - dr amount), which is the same as abs(dr amount - cr amount)
+and should usually equal zero.
+
+    
+
 ##### Deleting an Account ledger from the COA
 
 You can delete an Account ledger only if its balance is zero. Attempting to delete
 a non zero ledger will throw an exception.  NB. Deleting a ledger will delete all of 
 its child ledgers as well.
+
+By zero, it is meant that both the debit and credit account values == zero.  You cannot
+therefore delete account ledgers for which any transactions have been made for it or
+any child accounts.  This is a simple security measure to ensure that data is not lost.
 
 <pre>
 $accountant->delAccount(new Nominal('7000'));
@@ -363,8 +379,13 @@ $account = $chart->getAccount(new Nominal('2000'));
 $dr = $account->dr();
 /* @var IntType $cr */
 $cr = $account->cr();
+
+//NB getting the balance of the root COA account should return zero.  If not
+//then your accounts are out of balance and need investigating. Perhaps something
+//outside of SA made an update, or a database glitch occurred.
 /* @var IntType $balance */
 $balance = $account->getBalance();
+
 /* @var Nominal $nom */
 $nom = $account->getNominal();
 /* @var StringType $name */

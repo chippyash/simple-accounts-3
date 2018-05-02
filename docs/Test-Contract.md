@@ -4,7 +4,6 @@
 
 *  ✓ You can create any valid account type
 *  ✓ You can get a balance for account types that support it
-*  ✓ Getting balance of a real account type will throw an exception
 *  ✓ Getting balance of a dummy account type will throw an exception
 *  ✓ You can get the account nominal code
 *  ✓ You can get the account type

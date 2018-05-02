@@ -90,21 +90,6 @@ class AccountTest extends \PHPUnit_Framework_TestCase {
     /**
      * @expectedException \SAccounts\AccountsException
      */
-    public function testGettingBalanceOfARealAccountTypeWillThrowAnException()
-    {
-        $this->sut = new Account(
-            new Nominal('9999'),
-            AccountType::REAL(),
-            new StringType('foo'),
-            new IntType(0),
-            new IntType(0)
-        );
-        $this->sut->getBalance();
-    }
-
-    /**
-     * @expectedException \SAccounts\AccountsException
-     */
     public function testGettingBalanceOfADummyAccountTypeWillThrowAnException()
     {
         $this->sut = new Account(

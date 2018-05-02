@@ -35,7 +35,7 @@ final class AccountType extends Enum
      */
     const DUMMY     = 0b0000000000000000; //   0
     /**
-     * Base of all real accounts - used internally, not for public consumption
+     * Base of all accounts - used for root accounts: Balance = abs(cr - dr)
      */
     const REAL      = 0b0000000000000001; //   1
 
@@ -147,6 +147,10 @@ final class AccountType extends Enum
         if (($this->value & self::CR) == self::CR) {
             //credit account type
             return new IntType($cr() - $dr());
+        }
+        if (($this->value & self::REAL) == self::REAL) {
+            //real balance - should always be zero as it is the root account
+            return new IntType(abs($cr() - $dr()));
         }
 
         throw new AccountsException('Cannot determine account type to set balance: ' . $this->value);
