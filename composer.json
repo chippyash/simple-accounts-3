@@ -3,11 +3,11 @@
   "description": "Database backed Simple Double Entry Accounting V3",
   "license": "GPL-3.0-or-later",
   "homepage" : "http://zf4.biz/packages?utm_source=packagist&utm_medium=web&utm_campaign=blinks&utm_content=accounts-2",
-  "keywords": ["accounting","double entry","database","zend"],
+  "keywords": ["accounting","double entry","database","zend", "mysql", "mariadb", "oqgraph"],
   "authors": [
     {
       "name": "Ashley Kitson",
-      "email": "ashley@zf4.biz"
+      "email": "info@zf4.biz"
     }
   ],
 
