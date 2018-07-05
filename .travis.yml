@@ -66,5 +66,5 @@ jobs:
 
 # configure notifications (email, IRC, campfire etc)
 notifications:
-  email: "ashley@zf4.biz"
+  email: "info@zf4.biz"
 

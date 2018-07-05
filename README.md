@@ -610,15 +610,9 @@ To run the tests:
 
 ## License
 
-This software library is released under the [GNU GPL V3 or later license](http://www.gnu.org/copyleft/gpl.html)
+This software library is released under the [BSD 3 Clause license](https://opensource.org/licenses/BSD-3-Clause)
 
 This software library is Copyright (c) 2017-2018, Ashley Kitson, UK
-
-<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/"><img alt="Creative Commons Licence" style="border-width:0" src="https://i.creativecommons.org/l/by-nc/4.0/88x31.png" /></a><br />This documentation is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">Creative Commons Attribution-NonCommercial 4.0 International License</a>.
-
-A commercial license is available for this software library, please contact the author. 
-It is normally free to deserving causes, but gets you around the limitation of the GPL
-license, which does not allow unrestricted inclusion of this code in commercial works.
 
 ## Sponsors
 
@@ -649,3 +643,5 @@ V1.3.0 Support for MySql
 V1.3.1 File path amend for mariadb migration
 
 V1.3.2 Remove ambiguity for treatment of real account balances
+
+V1.4.0 Change of license from GPL V3 to BSD 3 Clause 
