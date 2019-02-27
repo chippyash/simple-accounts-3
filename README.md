@@ -645,3 +645,5 @@ V1.3.1 File path amend for mariadb migration
 V1.3.2 Remove ambiguity for treatment of real account balances
 
 V1.4.0 Change of license from GPL V3 to BSD 3 Clause 
+
+V1.4.1 Fix issue 1
