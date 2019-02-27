@@ -1,6 +1,6 @@
 # Build script for simple accounts database - MariaDb/OQGraph Variant
 # Copyright, 2018, Ashley Kitson, UK
-# License: GPL V3+, see License.md
+# License: BSD-3-Clause, see License.md
 
 DELIMITER //
 DROP TRIGGER IF EXISTS sp_tr_jrn_entry_updt;

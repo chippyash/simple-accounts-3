@@ -4,7 +4,7 @@
  *
  * @author    Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
- * @license   GPL V3+ See LICENSE.md
+ * @license   BSD-3-Clause See LICENSE.md
  */
 namespace SAccounts\Visitor;
 

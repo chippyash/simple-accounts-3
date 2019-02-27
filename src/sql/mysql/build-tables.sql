@@ -1,6 +1,6 @@
 # Build script for simple accounts database - MySql variant
 # Copyright, 2018, Ashley Kitson, UK
-# License: GPL V3+, see License.md
+# License: BSD-3-Clause, see License.md
 
 DROP TABLE IF EXISTS sa_coa_ledger;
 DROP TABLE IF EXISTS sa_journal_entry;
