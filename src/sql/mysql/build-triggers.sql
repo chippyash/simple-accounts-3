@@ -3,8 +3,7 @@
 # License: BSD-3-Clause, see License.md
 
 DELIMITER //
-DROP TRIGGER IF EXISTS sp_tr_jrn_entry_updt;
-//
+DROP TRIGGER IF EXISTS sp_tr_jrn_entry_updt//
 CREATE DEFINER = CURRENT_USER TRIGGER sp_tr_jrn_entry_updt
   AFTER INSERT ON sa_journal_entry FOR EACH ROW
   BEGIN

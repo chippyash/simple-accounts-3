@@ -3,7 +3,7 @@
 # License: BSD-3-Clause, see License.md
 DELIMITER //
 
-DROP FUNCTION IF EXISTS sa_fu_add_chart;
+DROP FUNCTION IF EXISTS sa_fu_add_chart//
 CREATE DEFINER = CURRENT_USER FUNCTION
   sa_fu_add_chart(
     name VARCHAR(20)
@@ -15,7 +15,7 @@ CREATE DEFINER = CURRENT_USER FUNCTION
     RETURN last_insert_id();
   END;
 //
-DROP PROCEDURE IF EXISTS sa_sp_add_ledger;
+DROP PROCEDURE IF EXISTS sa_sp_add_ledger//
 CREATE DEFINER = CURRENT_USER PROCEDURE
   sa_sp_add_ledger(
     chartInternalId INT(10) UNSIGNED,
@@ -55,7 +55,7 @@ CREATE DEFINER = CURRENT_USER PROCEDURE
       VALUES (prntId, chartInternalId, nominal, type, name);
   END;
 //
-DROP PROCEDURE IF EXISTS sa_sp_del_ledger;
+DROP PROCEDURE IF EXISTS sa_sp_del_ledger//
 CREATE DEFINER = CURRENT_USER PROCEDURE
   sa_sp_del_ledger(
   chartId INT(10) UNSIGNED,
@@ -128,7 +128,7 @@ MODIFIES SQL DATA DETERMINISTIC
   END;
 //
 
-DROP PROCEDURE IF EXISTS sa_sp_get_tree;
+DROP PROCEDURE IF EXISTS sa_sp_get_tree//
 CREATE DEFINER = CURRENT_USER PROCEDURE
   sa_sp_get_tree(
   chartId INT(10) UNSIGNED
