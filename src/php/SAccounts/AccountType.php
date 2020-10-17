@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Accounting V3
 
@@ -9,8 +10,6 @@
 
 namespace SAccounts;
 
-use Chippyash\Type\Number\IntType;
-use Chippyash\Type\String\StringType;
 use MyCLabs\Enum\Enum;
 
 /**
@@ -102,55 +101,56 @@ final class AccountType extends Enum
     /**
      * Return the debit column title for this account type
      *
-     * @return StringType
+     * @return string
      * @throws AccountsException
      */
-    public function drTitle()
+    public function drTitle(): string
     {
         if (!array_key_exists($this->value, $this->titles)) {
             throw new AccountsException('Invalid AccountType for drTitle: ' . $this->value);
         }
 
-        return new StringType($this->titles[$this->value]['dr']);
+        return $this->titles[$this->value]['dr'];
     }
 
     /**
      * Return the credit column title for this account type
      *
-     * @return StringType
+     * @return string
      * @throws AccountsException
      */
-    public function crTitle()
+    public function crTitle(): string
     {
         if (!array_key_exists($this->value, $this->titles)) {
             throw new AccountsException('Invalid AccountType for crTitle: ' . $this->value);
         }
 
-        return new StringType($this->titles[$this->value]['cr']);
+        return $this->titles[$this->value]['cr'];
     }
 
     /**
      * Return balance of debit and credit amounts
      *
-     * @param IntType $dr debit amount
-     * @param IntType $cr credit amount
+     * @param int $dr debit amount
+     * @param int $cr credit amount
      *
-     * @return IntType
+     * @return int
+     *
      * @throws AccountsException
      */
-    public function balance(IntType $dr, IntType $cr)
+    public function balance(int $dr, int $cr): int
     {
         if (($this->value & self::DR) == self::DR) {
             //debit account type
-            return new IntType($dr() - $cr());
+            return $dr - $cr;
         }
         if (($this->value & self::CR) == self::CR) {
             //credit account type
-            return new IntType($cr() - $dr());
+            return $cr - $dr;
         }
         if (($this->value & self::REAL) == self::REAL) {
             //real balance - should always be zero as it is the root account
-            return new IntType(abs($cr() - $dr()));
+            return abs($cr - $dr);
         }
 
         throw new AccountsException('Cannot determine account type to set balance: ' . $this->value);

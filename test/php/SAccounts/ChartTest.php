@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Accounting V3
  *
@@ -10,11 +11,10 @@
 namespace Test\SAccounts;
 
 use SAccounts\Account;
+use SAccounts\AccountsException;
 use SAccounts\AccountType;
 use SAccounts\Chart;
 use SAccounts\Nominal;
-use Chippyash\Type\Number\IntType;
-use Chippyash\Type\String\StringType;
 use Tree\Node\Node;
 
 class ChartTest extends \PHPUnit_Framework_TestCase {
@@ -35,32 +35,32 @@ class ChartTest extends \PHPUnit_Framework_TestCase {
             new Account(
                 new Nominal('0000'),
                 AccountType::REAL(),
-                new StringType('COA'),
-                new IntType(0),
-                new IntType(0)
+                'COA',
+                0,
+                0
             ),
             [
                 new Node(
                     new Account(
                         new Nominal('1000'),
                         AccountType::ASSET(),
-                        new StringType('Assets'),
-                        new IntType(0),
-                        new IntType(0)
+                        'Assets',
+                        0,
+                        0
                     )
                 ),
                 new Node(
                     new Account(
                         new Nominal('2000'),
                         AccountType::LIABILITY(),
-                        new StringType('Liabilities'),
-                        new IntType(0),
-                        new IntType(0)
+                        'Liabilities',
+                        0,
+                        0
                     )
                 )
             ]
         );
-        $this->sut = new Chart(new StringType('Foo Chart'), $tree);
+        $this->sut = new Chart('Foo Chart', $tree);
     }
 
     public function testConstructionCreatesChart()
@@ -71,8 +71,8 @@ class ChartTest extends \PHPUnit_Framework_TestCase {
     public function testYouCanGiveAChartAnOptionalTreeInConstruction()
     {
         $tree = new Node();
-        $sut = new Chart(new StringType('Foo Chart'), $tree);
-        $this->assertInstanceOf('SAccounts\Chart', $sut);
+        $sut = new Chart('Foo Chart', $tree);
+        $this->assertInstanceOf(Chart::class, $sut);
     }
 
 
@@ -82,11 +82,9 @@ class ChartTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals('2000', $ac->getNominal()->get());
     }
 
-    /**
-     * @expectedException \SAccounts\AccountsException
-     */
     public function testTryingToGetANonExistentAccountWillThrowAnException()
     {
+        $this->expectException(AccountsException::class);
         $this->sut->getAccount(new Nominal('9999'));
     }
 
@@ -96,11 +94,9 @@ class ChartTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($this->sut->hasAccount(new Nominal('9999')));
     }
 
-    /**
-     * @expectedException \SAccounts\AccountsException
-     */
     public function testTryingToGetAParentIdOfANonExistentAccountWillThrowAnException()
     {
+        $this->expectException(AccountsException::class);
         $this->sut->getParentId(new Nominal('9999'));
     }
 
@@ -112,12 +108,12 @@ class ChartTest extends \PHPUnit_Framework_TestCase {
     public function testYouCanProvideAnOptionalInternalIdWhenConstructingAChart()
     {
         $sut = new Chart(
-            new StringType('Foo'),
+            'Foo',
             null,
-            new IntType(12)
+            12
         );
 
-        $this->assertEquals(12, $sut->id()->get());
+        $this->assertEquals(12, $sut->id());
     }
 
     public function testYouCanSetTheChartRootNode()
@@ -125,9 +121,9 @@ class ChartTest extends \PHPUnit_Framework_TestCase {
         $ac1 = new Account(
             new Nominal('9998'),
             AccountType::ASSET(),
-            new StringType('Asset'),
-            new IntType(0),
-            new IntType(0)
+            'Asset',
+            0,
+            0
         );
         $root = new Node($ac1);
         $this->sut->setRootNode($root);

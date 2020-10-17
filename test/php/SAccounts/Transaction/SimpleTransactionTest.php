@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -9,8 +10,8 @@
 namespace Chippyash\Test\SAccounts\Transaction;
 
 use Chippyash\Currency\Factory;
-use Chippyash\Type\Number\IntType;
-use Chippyash\Type\String\StringType;
+
+
 use SAccounts\Nominal;
 use SAccounts\Transaction\SimpleTransaction;
 
@@ -23,12 +24,12 @@ class SimpleTransactionTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->sut = new SimpleTransaction(new Nominal('0000'), new Nominal('1000'), new IntType(1226));
+        $this->sut = new SimpleTransaction(new Nominal('0000'), new Nominal('1000'), 1226);
     }
 
     public function testBasicConstructionSetsAnEmptyNoteOnTheTransaction()
     {
-        $this->assertEquals('', $this->sut->getNote()->get());
+        $this->assertEquals('', $this->sut->getNote());
     }
 
     public function testBasicConstructionSetsDateForTodayOnTheTransaction()
@@ -41,8 +42,8 @@ class SimpleTransactionTest extends \PHPUnit_Framework_TestCase
 
     public function testYouCanSetAnOptionalNoteOnConstruction()
     {
-        $note = new StringType('foo bar');
-        $sut = new SimpleTransaction(new Nominal('0000'), new Nominal('1000'), new IntType(1226), $note);
+        $note = 'foo bar';
+        $sut = new SimpleTransaction(new Nominal('0000'), new Nominal('1000'), 1226, $note);
         $this->assertEquals($note, $sut->getNote());
     }
 
@@ -51,11 +52,11 @@ class SimpleTransactionTest extends \PHPUnit_Framework_TestCase
         $sut = new SimpleTransaction(
             new Nominal('0000'),
             new Nominal('1000'),
-            new IntType(1226),
+            1226,
             null,
-            new StringType('PUR')
+            'PUR'
         );
-        $this->assertEquals('PUR', $sut->getSrc()->get());
+        $this->assertEquals('PUR', $sut->getSrc());
     }
 
     public function testYouCanSetAnOptionalReferenceOnConstruction()
@@ -63,22 +64,22 @@ class SimpleTransactionTest extends \PHPUnit_Framework_TestCase
         $sut = new SimpleTransaction(
             new Nominal('0000'),
             new Nominal('1000'),
-            new IntType(1226),
+            1226,
             null,
             null,
-            new IntType(22)
+            22
         );
-        $this->assertEquals(22, $sut->getRef()->get());
+        $this->assertEquals(22, $sut->getRef());
     }
 
     public function testYouCanSetAnOptionalDateOnConstruction()
     {
-        $note = new StringType('foo bar');
+        $note = 'foo bar';
         $dt = new \DateTime();
         $sut = new SimpleTransaction(
             new Nominal('0000'),
             new Nominal('1000'),
-            new IntType(1226),
+            1226,
             $note,
             null,
             null,
@@ -93,7 +94,7 @@ class SimpleTransactionTest extends \PHPUnit_Framework_TestCase
 
     public function testYouCanSetAndGetAnId()
     {
-        $id = new IntType(1);
+        $id = 1;
         $this->assertEquals($id, $this->sut->setId($id)->getId());
     }
 
@@ -109,16 +110,16 @@ class SimpleTransactionTest extends \PHPUnit_Framework_TestCase
 
     public function testYouCanGetTheTransactionAmount()
     {
-        $this->assertEquals(1226, $this->sut->getAmount()->get());
+        $this->assertEquals(1226, $this->sut->getAmount());
     }
 
     public function testYouCanGetTheTransactionNote()
     {
-        $this->assertInstanceOf('Chippyash\Type\String\StringType', $this->sut->getNote());
+        $this->assertInternalType('string', $this->sut->getNote());
     }
 
     public function testYouCanGetTheTransactionDatetime()
     {
-        $this->assertInstanceOf('DateTime', $this->sut->getDate());
+        $this->assertInstanceOf(\DateTime::class, $this->sut->getDate());
     }
 }

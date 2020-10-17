@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Accounting V3
  *
@@ -10,10 +11,9 @@
 namespace Test\SAccounts;
 
 use SAccounts\Account;
+use SAccounts\AccountsException;
 use SAccounts\AccountType;
 use SAccounts\Nominal;
-use Chippyash\Type\Number\IntType;
-use Chippyash\Type\String\StringType;
 
 class AccountTest extends \PHPUnit_Framework_TestCase {
 
@@ -30,11 +30,11 @@ class AccountTest extends \PHPUnit_Framework_TestCase {
         $this->sut = new Account(
             new Nominal('9999'),
             $acType,
-            new StringType('foo'),
-            new IntType(0),
-            new IntType(0)
+            'foo',
+            0,
+            0
         );
-        $this->assertInstanceOf('SAccounts\Account', $this->sut);
+        $this->assertInstanceOf(Account::class, $this->sut);
     }
 
     public function validAccountTypes()
@@ -63,12 +63,12 @@ class AccountTest extends \PHPUnit_Framework_TestCase {
         $this->sut = new Account(
             new Nominal('9999'),
             $acType,
-            new StringType('foo'),
-            new IntType($dr),
-            new IntType($cr)
+            'foo',
+            $dr,
+            $cr
         );
-        $this->assertInstanceOf('Chippyash\Type\Number\IntType', $this->sut->getBalance());
-        $this->assertEquals(12, $this->sut->getBalance()->get(), "wrong balance for: " . $acType->getKey());
+        $this->assertInternalType('int', $this->sut->getBalance());
+        $this->assertEquals(12, $this->sut->getBalance(), "wrong balance for: " . $acType->getKey());
     }
 
     public function accountTypesThatHaveBalance()
@@ -87,18 +87,16 @@ class AccountTest extends \PHPUnit_Framework_TestCase {
         ];
     }
 
-    /**
-     * @expectedException \SAccounts\AccountsException
-     */
     public function testGettingBalanceOfADummyAccountTypeWillThrowAnException()
     {
         $this->sut = new Account(
             new Nominal('9999'),
             AccountType::DUMMY(),
-            new StringType('foo'),
-            new IntType(0),
-            new IntType(0)
+            'foo',
+            0,
+            0
         );
+        $this->expectException(AccountsException::class);
         $this->sut->getBalance();
     }
 
@@ -107,9 +105,9 @@ class AccountTest extends \PHPUnit_Framework_TestCase {
         $this->sut = new Account(
             new Nominal('9999'),
             AccountType::DUMMY(),
-            new StringType('foo'),
-            new IntType(0),
-            new IntType(0)
+            'foo',
+            0,
+            0
         );
         $this->assertEquals(new Nominal('9999'), $this->sut->getNominal());
     }
@@ -119,9 +117,9 @@ class AccountTest extends \PHPUnit_Framework_TestCase {
         $this->sut = new Account(
             new Nominal('9999'),
             AccountType::DUMMY(),
-            new StringType('foo'),
-            new IntType(0),
-            new IntType(0)
+            'foo',
+            0,
+            0
         );
         $this->assertTrue(AccountType::DUMMY()->equals($this->sut->getType()));
     }
@@ -131,11 +129,11 @@ class AccountTest extends \PHPUnit_Framework_TestCase {
         $this->sut = new Account(
             new Nominal('9999'),
             AccountType::DUMMY(),
-            new StringType('foo'),
-            new IntType(0),
-            new IntType(0)
+            'foo',
+            0,
+            0
         );
-        $this->assertEquals(new StringType('foo'), $this->sut->getName());
+        $this->assertEquals('foo', $this->sut->getName());
     }
 
     public function testYouCanGetTheDebitAndCreditAmounts()
@@ -143,12 +141,12 @@ class AccountTest extends \PHPUnit_Framework_TestCase {
         $this->sut = new Account(
             new Nominal('9999'),
             AccountType::DUMMY(),
-            new StringType('foo'),
-            new IntType(12),
-            new IntType(20)
+            'foo',
+            12,
+            20
         );
 
-        $this->assertEquals(12, $this->sut->dr()->get());
-        $this->assertEquals(20, $this->sut->cr()->get());
+        $this->assertEquals(12, $this->sut->dr());
+        $this->assertEquals(20, $this->sut->cr());
     }
 }

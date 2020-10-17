@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -8,8 +9,7 @@
  */
 namespace Test\SAccounts\Transaction;
 
-use Chippyash\Type\Number\IntType;
-use Chippyash\Type\String\StringType;
+use SAccounts\AccountsException;
 use SAccounts\AccountType;
 use SAccounts\Nominal;
 use SAccounts\Transaction\Entry;
@@ -24,7 +24,7 @@ class SplitTransactionTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $amount = new IntType(1226);
+        $amount = 1226;
         $this->sut = (new SplitTransaction())
             ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
             ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
@@ -32,7 +32,7 @@ class SplitTransactionTest extends \PHPUnit_Framework_TestCase
 
     public function testBasicConstructionSetsAnEmptyNoteOnTheTransaction()
     {
-        $this->assertEquals('', $this->sut->getNote()->get());
+        $this->assertEquals('', $this->sut->getNote());
     }
 
     public function testBasicConstructionSetsDateForTodayOnTheTransaction()
@@ -45,8 +45,8 @@ class SplitTransactionTest extends \PHPUnit_Framework_TestCase
 
     public function testYouCanSetAnOptionalNoteOnConstruction()
     {
-        $note = new StringType('foo bar');
-        $amount = new IntType(1226);
+        $note = 'foo bar';
+        $amount = 1226;
         $sut = (new SplitTransaction($note))
             ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
             ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
@@ -55,54 +55,54 @@ class SplitTransactionTest extends \PHPUnit_Framework_TestCase
 
     public function testANullNoteWillBeRetrievedAsAnEmptyString()
     {
-        $amount = new IntType(1226);
+        $amount = 1226;
         $sut = (new SplitTransaction())
             ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
             ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
-        $this->assertEquals('', $sut->getNote()->get());
+        $this->assertEquals('', $sut->getNote());
     }
 
     public function testYouCanSetAnOptionalSourceOnConstruction()
     {
-        $amount = new IntType(1226);
-        $sut = (new SplitTransaction(null, new StringType('PUR')))
+        $amount = 1226;
+        $sut = (new SplitTransaction(null, 'PUR'))
             ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
             ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
-        $this->assertEquals('PUR', $sut->getSrc()->get());
+        $this->assertEquals('PUR', $sut->getSrc());
     }
 
     public function testANullSourceWillBeRetrievedAsAnEmptyString()
     {
-        $amount = new IntType(1226);
+        $amount = 1226;
         $sut = (new SplitTransaction())
             ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
             ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
-        $this->assertEquals('', $sut->getSrc()->get());
+        $this->assertEquals('', $sut->getSrc());
     }
 
     public function testYouCanSetAnOptionalReferenceOnConstruction()
     {
-        $amount = new IntType(1226);
-        $sut = (new SplitTransaction(null, null, new IntType(22)))
+        $amount = 1226;
+        $sut = (new SplitTransaction(null, null, 22))
             ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
             ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
-        $this->assertEquals(22, $sut->getRef()->get());
+        $this->assertEquals(22, $sut->getRef());
     }
 
     public function testANullReferenceWillBeRetrievedAsAZeroInteger()
     {
-        $amount = new IntType(1226);
+        $amount = 1226;
         $sut = (new SplitTransaction())
             ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
             ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
-        $this->assertEquals(0, $sut->getRef()->get());
+        $this->assertEquals(0, $sut->getRef());
     }
 
     public function testYouCanSetAnOptionalDateOnConstruction()
     {
-        $note = new StringType('foo bar');
+        $note = 'foo bar';
         $dt = new \DateTime();
-        $amount = new IntType(1226);
+        $amount = 1226;
         $sut = (new SplitTransaction($note, null, null, $dt))
             ->addEntry(new Entry(new Nominal('0000'), $amount, AccountType::DR()))
             ->addEntry(new Entry(new Nominal('1000'), $amount, AccountType::CR()));
@@ -116,7 +116,7 @@ class SplitTransactionTest extends \PHPUnit_Framework_TestCase
 
     public function testYouCanSetAndGetAnId()
     {
-        $id = new IntType(1);
+        $id = 1;
         $this->assertEquals($id, $this->sut->setId($id)->getId());
     }
 
@@ -124,14 +124,14 @@ class SplitTransactionTest extends \PHPUnit_Framework_TestCase
     {
         $codes = $this->sut->getDrAc();
         $this->assertInternalType('array', $codes);
-        $this->assertInstanceOf('SAccounts\Nominal', $codes[0]);
+        $this->assertInstanceOf(Nominal::class, $codes[0]);
     }
 
     public function testGettingTheCreditAccountForASplitTransactionWillReturnAnArrayOfNominals()
     {
         $codes = $this->sut->getCrAc();
         $this->assertInternalType('array', $codes);
-        $this->assertInstanceOf('SAccounts\Nominal', $codes[0]);
+        $this->assertInstanceOf(Nominal::class, $codes[0]);
     }
 
     public function testCheckingIfASplitTransactionIsBalancedWillReturnTrueIfBalanced()
@@ -141,58 +141,51 @@ class SplitTransactionTest extends \PHPUnit_Framework_TestCase
 
     public function testCheckingIfASplitTransactionIsBalancedWillReturnFalseIfNotBalanced()
     {
-        $amount = new IntType(10);
+        $amount = 10;
         $this->sut->addEntry(new Entry(new Nominal('2000'), $amount, AccountType::CR()));
         $this->assertFalse($this->sut->checkBalance());
     }
 
     public function testYouCanGetTheTotalTransactionAmountIfTheTransactionIsBalanced()
     {
-        $this->assertEquals(1226, $this->sut->getAmount()->get());
+        $this->assertEquals(1226, $this->sut->getAmount());
     }
 
-    /**
-     * @expectedException \SAccounts\AccountsException
-     */
     public function testIfTheTransactionIsNotBalancedGettingTheTotalTransactionAmountWillThrowAnException()
     {
-        $amount = new IntType(10);
-        $this->sut->addEntry(new Entry(new Nominal('2000'), $amount, AccountType::CR()))
+        $this->expectException(AccountsException::class);
+        $this->sut->addEntry(new Entry(new Nominal('2000'), 10, AccountType::CR()))
             ->getAmount();
     }
 
     public function testYouCanGetTheTransactionNote()
     {
-        $this->assertInstanceOf('Chippyash\Type\String\StringType', $this->sut->getNote());
+        $this->assertInternalType('string', $this->sut->getNote());
     }
 
     public function testYouCanGetTheTransactionDatetime()
     {
-        $this->assertInstanceOf('DateTime', $this->sut->getDate());
+        $this->assertInstanceOf(\DateTime::class, $this->sut->getDate());
     }
 
     public function testASplitTransactionIsSimpleIfItHasOneDrAndOneCrEntry()
     {
         $this->assertTrue($this->sut->isSimple());
-        $amount = new IntType(10);
-        $this->sut->addEntry(new Entry(new Nominal('2000'), $amount, AccountType::CR()));
+        $this->sut->addEntry(new Entry(new Nominal('2000'), 10, AccountType::CR()));
         $this->assertFalse($this->sut->isSimple());
     }
 
     public function testYouCanGetAnEntryByItsNominalId()
     {
-        $amount = new IntType(10);
-        $this->sut->addEntry(new Entry(new Nominal('2000'), $amount, AccountType::CR()));
+        $this->sut->addEntry(new Entry(new Nominal('2000'), 10, AccountType::CR()));
         $test = $this->sut->getEntry(new Nominal('2000'));
-        $this->assertInstanceOf('SAccounts\Transaction\Entry', $test);
+        $this->assertInstanceOf(Entry::class, $test);
     }
 
-    /**
-     * @expectedException  \SAccounts\AccountsException
-     * @expectedExceptionMessage Entry not found
-     */
     public function testGettingAnUnknownEntryWillThrowAnException()
     {
+        $this->expectException(AccountsException::class);
+        $this->expectExceptionMessage('Entry not found');
         $this->sut->getEntry(new Nominal('2000'));
     }
 }

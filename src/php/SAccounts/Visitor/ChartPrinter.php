@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -10,7 +11,6 @@ namespace SAccounts\Visitor;
 
 use Chippyash\Currency\Currency;
 use SAccounts\Account;
-use SAccounts\AccountType;
 use Tree\Node\NodeInterface;
 use Tree\Visitor\Visitor;
 
@@ -48,11 +48,11 @@ class ChartPrinter implements Visitor
 
         /** @var Account $ac */
         $ac = $node->getValue();
-        $nominal = str_pad($ac->getNominal(), 8);
+        $nominal = str_pad($ac->getNominal()->get(), 8);
         $name = str_pad($ac->getName(), 20);
-        $dr = str_pad($this->crcy->set($ac->dr()->get())->display(), 15, ' ', STR_PAD_LEFT);
-        $cr = str_pad($this->crcy->set($ac->cr()->get())->display(), 15, ' ', STR_PAD_LEFT);
-        $balStr = $this->crcy->set($ac->getBalance()->get())->display();
+        $dr = str_pad($this->crcy->set($ac->dr())->display()->get(), 15, ' ', STR_PAD_LEFT);
+        $cr = str_pad($this->crcy->set($ac->cr())->display()->get(), 15, ' ', STR_PAD_LEFT);
+        $balStr = $this->crcy->set($ac->getBalance())->display()->get();
         $balance = str_pad($balStr, 15, ' ', STR_PAD_LEFT);
         echo "{$nominal}{$name}{$dr}{$cr}{$balance}\n";
 

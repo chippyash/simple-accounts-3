@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Accounting V3
  
@@ -10,7 +11,6 @@ namespace SAccounts\Visitor;
 
 use Tree\Visitor\Visitor;
 use Tree\Node\NodeInterface;
-use Tree\Node\Node;
 use SAccounts\Nominal;
 use SAccounts\Account;
 
@@ -37,7 +37,7 @@ class NodeFinder implements Visitor
      *
      * @return NodeInterface|null
      */
-    public function visit(NodeInterface $node)
+    public function visit(NodeInterface $node): ?NodeInterface
     {
         $currAc = $node->getValue();
 

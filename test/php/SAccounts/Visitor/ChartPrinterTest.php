@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -9,8 +10,6 @@
 namespace Test\SAccounts\Visitor;
 
 use Chippyash\Currency\Currency;
-use Chippyash\Type\Number\IntType;
-use Chippyash\Type\String\StringType;
 use SAccounts\Account;
 use SAccounts\AccountType;
 use SAccounts\Nominal;
@@ -35,27 +34,27 @@ class ChartPrinterTest extends \PHPUnit_Framework_TestCase
             new Account(
                 new Nominal('0000'),
                 AccountType::REAL(),
-                new StringType('COA'),
-                new IntType(1001),
-                new IntType(1001)
+                'COA',
+                1001,
+                1001
             ),
             [
                 new Node(
                     new Account(
                         new Nominal('1000'),
                         AccountType::ASSET(),
-                        new StringType('Assets'),
-                        new IntType(1001),
-                        new IntType(0)
+                        'Assets',
+                        1001,
+                        0
                     )
                 ),
                 new Node(
                     new Account(
                         new Nominal('2000'),
                         AccountType::LIABILITY(),
-                        new StringType('Liabilities'),
-                        new IntType(0),
-                        new IntType(1001)
+                        'Liabilities',
+                        0,
+                        1001
                     )
                 )
             ]

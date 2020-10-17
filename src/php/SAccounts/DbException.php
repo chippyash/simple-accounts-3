@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -16,7 +17,7 @@ use Zend\Db\Adapter\Exception\InvalidQueryException;
  */
 class DbException extends AccountsException
 {
-    public function __construct(\Exception $previous)
+    public function __construct(\Throwable $previous)
     {
         $errMsg = $previous->getMessage();
         $matches = [];
@@ -28,6 +29,6 @@ class DbException extends AccountsException
         if ($previous instanceof \PDOException) {
             preg_match('/.*\[45000\].*: (?P<code>\d+) (?P<err>[\w, ]+)/', $errMsg, $matches);
         }
-        parent::__construct($matches['err'], $matches['code'], $previous);
+        parent::__construct($matches['err'], (int) $matches['code'], $previous);
     }
 }

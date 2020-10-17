@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -12,16 +13,13 @@ use SAccounts\AccountType;
 use SAccounts\Nominal;
 use SAccounts\Transaction\Entries;
 use SAccounts\Transaction\Entry;
-use Chippyash\Type\Number\IntType;
+
 
 class EntriesTest extends \PHPUnit_Framework_TestCase
 {
     public function testYouCanCreateAnEmptyEntriesCollection()
     {
-        $this->assertInstanceOf(
-            'SAccounts\Transaction\Entries',
-            new Entries()
-        );
+        $this->assertInstanceOf(Entries::class, new Entries());
     }
 
     public function testYouCanCreateAnEntriesCollectionsWithEntryValues()
@@ -30,20 +28,18 @@ class EntriesTest extends \PHPUnit_Framework_TestCase
             'SAccounts\Transaction\Entries',
             new Entries(
                 array(
-                    $this->getEntry('7789', 12.34, 'dr'),
-                    $this->getEntry('3456', 6.17, 'cr'),
-                    $this->getEntry('2001', 6.17, 'cr'),
+                    $this->getEntry('7789', 1234, 'dr'),
+                    $this->getEntry('3456', 617, 'cr'),
+                    $this->getEntry('2001', 617, 'cr'),
                 )
             )
         );
     }
 
-    /**
-     * @expectedException \RuntimeException
-     * @expectedExceptionMessage Value 0 is not a SAccounts\Transaction\Entry
-     */
     public function testYouCannotCreateAnEntriesCollectionWithNonEntryValues()
     {
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Value 0 is not a SAccounts\Transaction\Entry');
         new Entries(array(new \stdClass()));
     }
 
@@ -51,15 +47,15 @@ class EntriesTest extends \PHPUnit_Framework_TestCase
     {
         $sut1 = new Entries(
             array(
-                $this->getEntry('7789', 12.34, 'dr'),
-                $this->getEntry('3456', 6.17, 'cr'),
-                $this->getEntry('2001', 6.17, 'cr'),
+                $this->getEntry('7789', 1234, 'dr'),
+                $this->getEntry('3456', 617, 'cr'),
+                $this->getEntry('2001', 617, 'cr'),
             )
         );
 
-        $sut2 = $sut1->addEntry($this->getEntry('3333',12.26,'cr'));
+        $sut2 = $sut1->addEntry($this->getEntry('3333',1226,'cr'));
 
-        $this->assertInstanceOf('SAccounts\Transaction\Entries', $sut2);
+        $this->assertInstanceOf(Entries::class, $sut2);
         $this->assertEquals(3, count($sut1));
         $this->assertEquals(4, count($sut2));
         $this->assertTrue($sut1 != $sut2);
@@ -69,9 +65,9 @@ class EntriesTest extends \PHPUnit_Framework_TestCase
     {
         $sut1 = new Entries(
             array(
-                $this->getEntry('7789', 12.34, 'dr'),
-                $this->getEntry('3456', 6.17, 'cr'),
-                $this->getEntry('2001', 6.17, 'cr'),
+                $this->getEntry('7789', 1234, 'dr'),
+                $this->getEntry('3456', 617, 'cr'),
+                $this->getEntry('2001', 617, 'cr'),
             )
         );
 
@@ -82,8 +78,8 @@ class EntriesTest extends \PHPUnit_Framework_TestCase
     {
         $sut1 = new Entries(
             array(
-                $this->getEntry('7789', 12.34, 'dr'),
-                $this->getEntry('3456', 6.17, 'cr'),
+                $this->getEntry('7789', 1234, 'dr'),
+                $this->getEntry('3456', 617, 'cr'),
             )
         );
 
@@ -94,7 +90,7 @@ class EntriesTest extends \PHPUnit_Framework_TestCase
     {
         return new Entry(
             new Nominal($id),
-            new IntType($amount),
+            $amount,
             ($type == 'dr' ? AccountType::DR() : AccountType::CR())
         );
     }

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -34,9 +35,9 @@ class Entries extends Collection
      *
      * @param Entry $entry
      *
-     * @return Collection Entries
+     * @return Entries
      */
-    public function addEntry(Entry $entry)
+    public function addEntry(Entry $entry): Entries
     {
         return $this->vUnion(static::create([$entry]));
     }
@@ -46,11 +47,11 @@ class Entries extends Collection
      *
      * @return bool
      */
-    public function checkBalance()
+    public function checkBalance(): bool
     {
         $balance = $this->reduce(function($carry, Entry $entry) {
-            $amount = $entry->getAmount()->get();
-            return ($entry->getType()->getValue() == AccountType::DR ? $carry - $amount : $carry + $amount);
+            $amount = $entry->getAmount();
+            return (AccountType::DR()->equals($entry->getType()) ? $carry - $amount : $carry + $amount);
         },
             0
         );

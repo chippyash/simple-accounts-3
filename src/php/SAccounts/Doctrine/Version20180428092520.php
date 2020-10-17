@@ -8,9 +8,9 @@
  */
 namespace SAccounts\Doctrine;
 
-use Doctrine\DBAL\Migrations\AbstractMigration;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Migrations\Version;
+use Doctrine\Migrations\AbstractMigration;
 
 /**
  * Base table and procedure generation

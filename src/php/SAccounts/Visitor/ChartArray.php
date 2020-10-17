@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -46,7 +47,7 @@ class ChartArray implements Visitor
      *
      * @return array [[nominal, acName, dr, cr, balance],...]
      */
-    public function visit(NodeInterface $node)
+    public function visit(NodeInterface $node): array
     {
         return FFor::create([
              'ret' => [],
@@ -55,23 +56,23 @@ class ChartArray implements Visitor
             ])
             ->dr(function($ac){
                 return $this->asInt
-                    ? $ac->dr()->get()
-                    : $this->crcy->set($ac->dr()->get())->getAsFloat();
+                    ? $ac->dr()
+                    : $this->crcy->set($ac->dr())->getAsFloat();
             })
             ->cr(function($ac){
                 return $this->asInt
-                    ? $ac->cr()->get()
-                    : $this->crcy->set($ac->cr()->get())->getAsFloat();
+                    ? $ac->cr()
+                    : $this->crcy->set($ac->cr())->getAsFloat();
             })
             ->balance(function($ac){
                 return $this->asInt
-                    ? $ac->getBalance()->get()
-                    : $this->crcy->set($ac->getBalance()->get())->getAsFloat();
+                    ? $ac->getBalance()
+                    : $this->crcy->set($ac->getBalance())->getAsFloat();
             })
             ->loop(function($dr, $cr, $balance, $ac, $node, $ret) {
                 $ret[] = [
                     $ac->getNominal()->get(),
-                    $ac->getName()->get(),
+                    $ac->getName(),
                     $dr,
                     $cr,
                     $balance

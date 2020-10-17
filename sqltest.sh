@@ -4,7 +4,12 @@
 # dbUid: test	test user requires all privileges on database
 # dbPwd: test
 
-OUTPUT="$(cat ./test/sql/*test.sql | mysql -u test -ptest test -N)"
+DBNAME=$1
+DBUID=$2
+DBPWD=$3
+DBHOST=$4
+
+OUTPUT="$(cat ./test/sql/*test.sql | mysql -h $DBHOST -u $DBUID -p$DBPWD $DBNAME -N)"
 PASSED=1
 if [[ $OUTPUT == *"Failed"* ]]; then
 	PASSED=0;

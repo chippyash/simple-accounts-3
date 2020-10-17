@@ -44,6 +44,12 @@ testSuiteLoaderFile="/path/to/StandardTestSuiteLoader.php"
         </whitelist>
     </filter>
 
+    <php>
+        <const name="DBUID" value="test"/>
+        <const name="DBPWD" value="test"/>
+        <const name="DBNAME" value="test"/>
+        <const name="DBHOST" value="localhost"/>
+    </php>
 
 </phpunit>
 

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Accounting V3
  *
@@ -9,8 +10,9 @@
 
 namespace Test\SAccounts;
 
+use SAccounts\AccountsException;
 use SAccounts\ChartDefinition;
-use Chippyash\Type\String\StringType;
+
 use org\bovigo\vfs\vfsStream;
 
 class ChartDefinitionTest extends \PHPUnit_Framework_TestCase {
@@ -35,42 +37,38 @@ EOT;
 
     public function testCanConstructWithValidFileName()
     {
-        $this->assertInstanceOf('SAccounts\ChartDefinition', new ChartDefinition(new StringType($this->filePath)));
+        $this->assertInstanceOf('SAccounts\ChartDefinition', new ChartDefinition($this->filePath));
     }
 
-    /**
-     * @expectedException \SAccounts\AccountsException
-     */
     public function testConstructionWithInvalidFileNameWillThrowException()
     {
-        $a = new ChartDefinition(new StringType('foo'));
+        $this->expectException(AccountsException::class);
+        new ChartDefinition('foo');
     }
 
     public function testConstructionWithValidFileNameWillReturnClass()
     {
-        $sut = new ChartDefinition(new StringType($this->filePath));
-        $this->assertInstanceOf('SAccounts\ChartDefinition', $sut);
+        $sut = new ChartDefinition($this->filePath);
+        $this->assertInstanceOf(ChartDefinition::class, $sut);
     }
 
-    /**
-     * @expectedException \SAccounts\AccountsException
-     */
     public function testGettingTheDefinitionWillThrowExceptionIfDefinitionFileIsInvalidXml()
     {
         $root = vfsStream::setup();
         $file = vfsStream::newFile('test2.xml')
             ->withContent('')
             ->at($root);
-        $sut = new ChartDefinition(new StringType($file->url()));
+        $sut = new ChartDefinition($file->url());
+
+        $this->expectException(AccountsException::class);
         $sut->getDefinition();
     }
 
-    /**
-     * @expectedException \SAccounts\AccountsException
-     */
     public function testGettingDefinitionWillThrowExceptionIfDefinitionFailsValidation()
     {
-        $sut = new ChartDefinition(new StringType($this->filePath));
+        $this->expectException(AccountsException::class);
+        $sut = new ChartDefinition($this->filePath);
+
         $this->assertInstanceOf('DOMDocument', $sut->getDefinition());
     }
 
@@ -89,7 +87,7 @@ EOT;
         $file = vfsStream::newFile('test3.xml')
             ->withContent($xml)
             ->at($root);
-        $sut = new ChartDefinition(new StringType($file->url()));
+        $sut = new ChartDefinition($file->url());
         $this->assertInstanceOf('DOMDocument', $sut->getDefinition());
     }
 

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Accounting V3
  
@@ -8,7 +9,6 @@
  */
 namespace SAccounts\Visitor;
 
-use Chippyash\Type\Number\IntType;
 use Tree\Visitor\Visitor;
 use Tree\Node\NodeInterface;
 use Zend\Db\Adapter\Adapter;
@@ -28,9 +28,9 @@ class NodeSaver implements Visitor
      */
     protected $db;
 
-    public function __construct(IntType $chartId, Adapter $db)
+    public function __construct(int $chartId, Adapter $db)
     {
-        $this->chartId = $chartId();
+        $this->chartId = $chartId;
         $this->db = $db;
         $this->prnt = null;
     }
@@ -40,14 +40,14 @@ class NodeSaver implements Visitor
      *
      * @return Account|null
      */
-    public function visit(NodeInterface $node)
+    public function visit(NodeInterface $node): ?Account
     {
         /** @var Account $currAc */
         $currAc = $node->getValue();
 
         $nominal = $currAc->getNominal()->get();
         $type = $currAc->getType()->getKey();
-        $name = $currAc->getName()->get();
+        $name = $currAc->getName();
         $prntNominal = ($node->isRoot() ? '' : $node->getParent()->getValue()->getNominal()->get());
 
         $this->db->query(

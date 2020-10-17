@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -8,8 +9,6 @@
  */
 namespace SAccounts\Transaction;
 
-use Chippyash\Type\Number\IntType;
-use Chippyash\Type\String\StringType;
 use Monad\Match;
 use Monad\Option;
 use SAccounts\AccountsException;
@@ -27,7 +26,7 @@ class SplitTransaction
     const ERR1 = 'Entry not found';
 
     /**
-     * @var IntType
+     * @var int
      */
     protected $txnId = null;
 
@@ -37,17 +36,17 @@ class SplitTransaction
     protected $date;
 
     /**
-     * @var StringType
+     * @var string
      */
     protected $note;
 
     /**
-     * @var StringType
+     * @var string
      */
     protected $src;
 
     /**
-     * @var IntType
+     * @var int
      */
     protected $ref;
 
@@ -59,16 +58,16 @@ class SplitTransaction
     /**
      * Constructor
      *
-     * @param StringType $note Defaults to '' if not set
-     * @param StringType $src  user defined source of transaction
-     * @param IntType $ref user defined reference for transaction
-     * @param \DateTime $date Defaults to today if not set
+     * @param string|null $note Defaults to '' if not set
+     * @param string|null $src  user defined source of transaction
+     * @param int|null $ref user defined reference for transaction
+     * @param \DateTime|null $date Defaults to today if not set
      */
     public function __construct(
-        StringType $note = null,
-        StringType $src = null,
-        IntType $ref = null,
-        \DateTime $date = null
+        ?string $note = null,
+        ?string $src = null,
+        ?int $ref = null,
+        ?\DateTime $date = null
     ) {
         Match::on(Option::create($date))
             ->Monad_Option_Some(function ($opt) {
@@ -106,53 +105,54 @@ class SplitTransaction
     }
 
     /**
-     * @param IntType $txnId
-     * @return $this
+     * @param int $txnId
+     *
+     * @return SplitTransaction
      */
-    public function setId(IntType $txnId)
+    public function setId(int $txnId): SplitTransaction
     {
         $this->txnId = $txnId;
         return $this;
     }
 
     /**
-     * @return IntType|null
+     * @return int|null
      */
-    public function getId()
+    public function getId(): ?int
     {
-        return $this->txnId;
+        return $this->txnId ?? null;
     }
 
     /**
      * @return \DateTime
      */
-    public function getDate()
+    public function getDate(): \DateTime
     {
         return $this->date;
     }
 
     /**
-     * @return StringType
+     * @return string
      */
-    public function getNote()
+    public function getNote(): string
     {
-        return is_null($this->note) ? new StringType('') : $this->note;
+        return $this->note ?? '';
     }
 
     /**
-     * @return StringType
+     * @return string
      */
-    public function getSrc()
+    public function getSrc(): string
     {
-        return is_null($this->src) ? new StringType('') : $this->src;
+        return $this->src ?? '';
     }
 
     /**
-     * @return IntType
+     * @return int
      */
-    public function getRef()
+    public function getRef(): int
     {
-        return is_null($this->ref) ? new IntType(0) : $this->ref;
+        return $this->ref ?? 0;
     }
 
     /**
@@ -160,9 +160,9 @@ class SplitTransaction
      *
      * @param Entry $entry
      *
-     * @return $this
+     * @return SplitTransaction
      */
-    public function addEntry(Entry $entry)
+    public function addEntry(Entry $entry): SplitTransaction
     {
         $this->entries = $this->entries->addEntry($entry);
 
@@ -174,7 +174,7 @@ class SplitTransaction
      *
      * @return bool
      */
-    public function checkBalance()
+    public function checkBalance(): bool
     {
         return $this->entries->checkBalance();
     }
@@ -182,7 +182,7 @@ class SplitTransaction
     /**
      * @return Entries
      */
-    public function getEntries()
+    public function getEntries(): Entries
     {
         return $this->entries;
     }
@@ -194,7 +194,7 @@ class SplitTransaction
      *
      * @throws AccountsException
      */
-    public function getEntry(Nominal $id)
+    public function getEntry(Nominal $id): Entry
     {
         $entries = array_values($this->entries->filter(function(Entry $entry) use ($id) {
             return ($entry->getId()->get() === $id());
@@ -211,20 +211,20 @@ class SplitTransaction
     /**
      * Get amount if the account is balanced
      *
-     * @return IntType
+     * @return int
      *
      * @throw AccountsException
      */
-    public function getAmount()
+    public function getAmount(): int
     {
         return Match::create(Option::create($this->entries->checkBalance(), false))
             ->Monad_Option_Some(
                 function () {
                     $tot = 0;
                     foreach ($this->entries as $entry) {
-                        $tot += $entry->getAmount()->get();
+                        $tot += $entry->getAmount();
                     }
-                    return new IntType($tot / 2);
+                    return $tot / 2;
                 })
             ->Monad_Option_None(function () {
                 throw new AccountsException('No amount for unbalanced transaction');
@@ -238,11 +238,11 @@ class SplitTransaction
      *
      * @return array [Nominal]
      */
-    public function getDrAc()
+    public function getDrAc(): array
     {
         $acs = [];
         foreach ($this->getEntries() as $entry) {
-            if ($entry->getType()->getValue() == AccountType::DR) {
+            if (AccountType::DR()->equals($entry->getType())) {
                 $acs[] = $entry->getId();
             }
         }
@@ -256,11 +256,11 @@ class SplitTransaction
      *
      * @return array [Nominal]
      */
-    public function getCrAc()
+    public function getCrAc(): array
     {
         $acs = [];
         foreach ($this->getEntries() as $entry) {
-            if ($entry->getType()->getValue() == AccountType::CR) {
+            if (AccountType::CR()->equals($entry->getType())) {
                 $acs[] = $entry->getId();
             }
         }

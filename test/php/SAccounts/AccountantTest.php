@@ -9,11 +9,12 @@
 
 namespace Test\SAccounts;
 
-use Chippyash\Type\Number\IntType;
-use Monad\Set;
+use Ds\Set;
 use SAccounts\Accountant;
-use Chippyash\Type\String\StringType;
+use SAccounts\AccountsException;
 use SAccounts\AccountType;
+use SAccounts\ChartDefinition;
+use SAccounts\DbException;
 use SAccounts\Nominal;
 use SAccounts\Transaction\Entry;
 use SAccounts\Transaction\SimpleTransaction;
@@ -34,14 +35,14 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
 
     protected function setUp()
     {
-        $this->adapter = new Adapter(
-            [
-                'driver' => 'Pdo_mysql',
-                'database' => 'test',
-                'username' => 'test',
-                'password' => 'test'
-            ]
-        );
+        $config = [
+            'driver' => 'Pdo_mysql',
+            'database' => DBNAME,
+            'username' => DBUID,
+            'password' => DBPWD,
+            'host' => DBHOST
+        ];
+        $this->adapter = new Adapter($config);
         
         $this->sut = new Accountant($this->adapter);
 
@@ -50,8 +51,8 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
 
     public function testAnAccountantCanCreateANewChartOfAccounts()
     {
-        $this->assertInstanceOf(
-            'Chippyash\Type\Number\IntType',
+        $this->assertInternalType(
+            'int',
             $this->createChart()
         );
     }
@@ -67,32 +68,30 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
         $this->assertEquals($chartId, $chart->id());
     }
 
-    /**
-     * @expectedException \SAccounts\AccountsException
-     * @expectedExceptionMessage Chart id not set
-     */
     public function testFetchingAChartWhenChartIdIsNotSetWillThrowAnException()
     {
+        $this->expectException(AccountsException::class);
+        $this->expectExceptionMessage('Chart id not set');
         $this->sut->fetchChart();
     }
 
     public function testYouCanWriteATransactionToAJournalAndUpdateAChart()
     {
         $chartId = $this->createChart();
-        $txn = new SplitTransaction(new StringType('test'), new StringType('PUR'), new IntType(10));
-        $txn->addEntry(new Entry(new Nominal('7100'),new IntType(1226), AccountType::DR()))
-            ->addEntry(new Entry(new Nominal('2110'),new IntType(1226), AccountType::CR()));
+        $txn = new SplitTransaction('test', 'PUR', 10);
+        $txn->addEntry(new Entry(new Nominal('7100'),1226, AccountType::DR()))
+            ->addEntry(new Entry(new Nominal('2110'),1226, AccountType::CR()));
 
         $txnId = $this->sut->writeTransaction($txn);
         $journal = $this->adapter->query("select * from sa_journal where id = ?")
-            ->execute([$txnId()])
+            ->execute([$txnId])
             ->current();
         $this->assertEquals($chartId, $journal['chartId']);
         $this->assertEquals('test', $journal['note']);
         $this->assertEquals(10, $journal['ref']);
 
         $entries = $this->adapter->query('select * from sa_journal_entry where jrnId = ?')
-            ->execute([$txnId()]);
+            ->execute([$txnId]);
         $this->assertEquals(2, $entries->count());
         $entries = $entries->getResource()->fetchAll(\PDO::FETCH_ASSOC);
 
@@ -122,80 +121,78 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
         $chart = $this->sut->fetchChart();
         $this->assertEquals(
             1226,
-            $chart->getAccount(new Nominal('7100'))->getBalance()->get()
+            $chart->getAccount(new Nominal('7100'))->getBalance()
         );
         $this->assertEquals(
             1226,
-            $chart->getAccount(new Nominal('7000'))->getBalance()->get()
+            $chart->getAccount(new Nominal('7000'))->getBalance()
         );
         $this->assertEquals(
             1226,
-            $chart->getAccount(new Nominal('5000'))->dr()->get()
+            $chart->getAccount(new Nominal('5000'))->dr()
         );
         $this->assertEquals(
             -1226,
-            $chart->getAccount(new Nominal('2110'))->getBalance()->get()
+            $chart->getAccount(new Nominal('2110'))->getBalance()
         );
         $this->assertEquals(
             -1226,
-            $chart->getAccount(new Nominal('2100'))->getBalance()->get()
+            $chart->getAccount(new Nominal('2100'))->getBalance()
         );
         $this->assertEquals(
             -1226,
-            $chart->getAccount(new Nominal('2000'))->getBalance()->get()
+            $chart->getAccount(new Nominal('2000'))->getBalance()
         );
         $this->assertEquals(
             1226,
-            $chart->getAccount(new Nominal('1000'))->cr()->get()
+            $chart->getAccount(new Nominal('1000'))->cr()
         );
         $this->assertEquals(
             1226,
-            $chart->getAccount(new Nominal('0000'))->dr()->get()
+            $chart->getAccount(new Nominal('0000'))->dr()
         );
         $this->assertEquals(
             1226,
-            $chart->getAccount(new Nominal('0000'))->cr()->get()
+            $chart->getAccount(new Nominal('0000'))->cr()
         );
     }
 
-    /**
-     * @expectedException \SAccounts\AccountsException
-     * @expectedExceptionMessage Chart id not set
-     */
     public function testWritingATransactionWhenChartIdIsNotSetWillThrowAnException()
     {
-        $txn = new SplitTransaction(new StringType('test'), new StringType('PUR'), new IntType(10));
-        $txn->addEntry(new Entry(new Nominal('7100'),new IntType(1226), AccountType::DR()))
-            ->addEntry(new Entry(new Nominal('2110'),new IntType(1226), AccountType::CR()));
+        $txn = new SplitTransaction('test', 'PUR', 10);
+        $txn->addEntry(new Entry(new Nominal('7100'),1226, AccountType::DR()))
+            ->addEntry(new Entry(new Nominal('2110'),1226, AccountType::CR()));
 
+        $this->expectException(AccountsException::class);
+        $this->expectExceptionMessage('Chart id not set');
         $this->sut->writeTransaction($txn);
     }
 
     public function testYouCanFetchAJournalTransactionByItsId()
     {
         $chartId = $this->createChart();
-        $txn = new SplitTransaction(new StringType('test'), new StringType('PUR'), new IntType(10));
-        $txn->addEntry(new Entry(new Nominal('7100'),new IntType(1226), AccountType::DR()))
-            ->addEntry(new Entry(new Nominal('2110'),new IntType(1226), AccountType::CR()));
+        $txn = new SplitTransaction('test', 'PUR', 10);
+        $txn->addEntry(new Entry(new Nominal('7100'),1226, AccountType::DR()))
+            ->addEntry(new Entry(new Nominal('2110'),1226, AccountType::CR()));
 
         $txnId = $this->sut->writeTransaction($txn);
 
         $storedTxn = $this->sut->fetchTransaction($txnId);
-        $this->assertInstanceOf('SAccounts\Transaction\SplitTransaction', $storedTxn);
+        $this->assertInstanceOf(SplitTransaction::class, $storedTxn);
 
-        $this->assertEquals(10, $storedTxn->getRef()->get());
-        $this->assertEquals('test', $storedTxn->getNote()->get());
+        $this->assertEquals(10, $storedTxn->getRef());
+        $this->assertEquals('test', $storedTxn->getNote());
         $this->assertEquals($txnId, $storedTxn->getId());
 
         /** @var Entry $drAc */
         $drAc = $storedTxn->getEntry($storedTxn->getDrAc()[0]);
         $this->assertEquals('7100', $drAc->getId()->get());
-        $this->assertEquals(1226, $drAc->getAmount()->get());
+        $this->assertEquals(1226, $drAc->getAmount());
         $this->assertTrue($drAc->getType()->equals(AccountType::DR()));
         /** @var Entry $crAc */
         $crAc = $storedTxn->getEntry($storedTxn->getCrAc()[0]);
         $this->assertEquals('2110', $crAc->getId()->get());
-        $this->assertEquals(1226, $crAc->getAmount()->get());
+        $this->assertEquals(1226, $crAc->getAmount());
         $this->assertTrue($crAc->getType()->equals(AccountType::CR()));
     }
 
@@ -206,37 +203,33 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
         $prntNominal = new Nominal(('7000'));
         $chartBefore = $this->sut->fetchChart();
 
-        $this->sut->addAccount($nominal, AccountType::EXPENSE(), new StringType('foo'), $prntNominal);
+        $this->sut->addAccount($nominal, AccountType::EXPENSE(), 'foo', $prntNominal);
         $chartAfter = $this->sut->fetchChart();
 
         $this->assertFalse($chartBefore->hasAccount($nominal));
         $this->assertTrue($chartAfter->hasAccount($nominal));
     }
 
-    /**
-     * @expectedException  \SAccounts\DbException
-     * @expectedExceptionMessage Invalid parent account nominal
-     */
     public function testAddingAnAccountToANonExistentParentWillThrowAnException()
     {
         $this->createChart();
         $nominal = new Nominal('7700');
         $prntNominal = new Nominal(('9999'));
 
-        $this->sut->addAccount($nominal, AccountType::EXPENSE(), new StringType('foo'), $prntNominal);
+        $this->expectException(DbException::class);
+        $this->expectExceptionMessage('Invalid parent account nominal');
+        $this->sut->addAccount($nominal, AccountType::EXPENSE(), 'foo', $prntNominal);
 
     }
 
-    /**
-     * @expectedException  \SAccounts\DbException
-     * @expectedExceptionMessage Chart already has root account
-     */
     public function testTryingToAddASecondRootAccountWillThrowAnException()
     {
         $this->createChart();
         $nominal = new Nominal(('9999'));
 
-        $this->sut->addAccount($nominal, AccountType::EXPENSE(), new StringType('foo'));
+        $this->expectException(DbException::class);
+        $this->expectExceptionMessage('Chart already has root account');
+        $this->sut->addAccount($nominal, AccountType::EXPENSE(), 'foo');
     }
 
     public function testYouCanDeleteAZeroBalanceAccount()
@@ -251,16 +244,15 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($chartAfter->hasAccount($nominal));
     }
 
-    /**
-     * @expectedException  \SAccounts\DbException
-     * @expectedExceptionMessage Account balance is non zero
-     */
     public function testDeletingANonZeroBalanceAccountWillThrowAnException()
     {
         $this->createChart();
         $nominal = new Nominal('3000');
-        $txn = new SimpleTransaction(new Nominal('2110'), new Nominal('3100'),new IntType(1226));
+        $txn = new SimpleTransaction(new Nominal('2110'), new Nominal('3100'),1226);
         $this->sut->writeTransaction($txn);
+
+        $this->expectException(DbException::class);
+        $this->expectExceptionMessage('Account balance is non zero');
         $this->sut->delAccount($nominal);
     }
 
@@ -269,12 +261,12 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
         $this->createChart();
         $this->sut->writeTransaction(
             new SimpleTransaction(
-                new Nominal('2110'), new Nominal('3100'),new IntType(1226)
+                new Nominal('2110'), new Nominal('3100'),1226
             )
         );
         $this->sut->writeTransaction(
             new SimpleTransaction(
-                new Nominal('3100'), new Nominal('2110'),new IntType(1000)
+                new Nominal('3100'), new Nominal('2110'),1000
             )
         );
         $entries = $this->sut->fetchAccountJournals(new Nominal('3100'));
@@ -287,7 +279,7 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
         $this->createChart();
         $this->sut->writeTransaction(
             new SimpleTransaction(
-                new Nominal('2110'), new Nominal('3100'),new IntType(1226)
+                new Nominal('2110'), new Nominal('3100'),1226
             )
         );
         $entries = $this->sut->fetchAccountJournals(new Nominal('3100'));
@@ -301,7 +293,7 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
         $this->createChart();
         $this->sut->writeTransaction(
             new SimpleTransaction(
-                new Nominal('2110'), new Nominal('3100'),new IntType(1226)
+                new Nominal('2110'), new Nominal('3100'),1226
             )
         );
         $entries = $this->sut->fetchAccountJournals(new Nominal('3000'));
@@ -311,7 +303,7 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
 
     protected function createChart()
     {
-        $def = $this->getMockBuilder('SAccounts\ChartDefinition')
+        $def = $this->getMockBuilder(ChartDefinition::class)
             ->disableOriginalConstructor()
             ->getMock();
         $xml = <<<EOT
@@ -359,6 +351,6 @@ EOT;
             ->method('getDefinition')
             ->willReturn($dom);
 
-        return $this->sut->createChart(new StringType('Personal'), $def);
+        return $this->sut->createChart('Personal', $def);
     }
 }

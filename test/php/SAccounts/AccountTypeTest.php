@@ -9,7 +9,7 @@
 
 namespace Test\SAccounts;
 
-use Chippyash\Type\Number\IntType;
+use SAccounts\AccountsException;
 use SAccounts\AccountType;
 
 class AccountTypeTest extends \PHPUnit_Framework_TestCase
@@ -54,21 +54,17 @@ class AccountTypeTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($titles['dr'], $ac->drTitle());
     }
 
-    /**
-     * @expectedException \SAccounts\AccountsException
-     */
     public function testGetADebitColumnTitleWithInvalidAccountTypeWillThrowException()
     {
         $ac = new AccountType(0);
+        $this->expectException(AccountsException::class);
         $ac->drTitle();
     }
 
-    /**
-     * @expectedException \SAccounts\AccountsException
-     */
     public function testGetACreditColumnTitleWithInvalidAccountTypeWillThrowException()
     {
         $ac = new AccountType(0);
+        $this->expectException(AccountsException::class);
         $ac->crTitle();
     }
 
@@ -103,8 +99,8 @@ class AccountTypeTest extends \PHPUnit_Framework_TestCase
     public function testWillGetCorrectBalanceForAllValidAccountTypes($acType, $dr, $cr, $result)
     {
         $ac = new AccountType($acType);
-        $test = $ac->balance(new IntType($dr), new IntType($cr));
-        $this->assertEquals($result, $test());
+        $test = $ac->balance($dr, $cr);
+        $this->assertEquals($result, $test);
     }
 
     public function balanceData()
@@ -123,13 +119,11 @@ class AccountTypeTest extends \PHPUnit_Framework_TestCase
         ];
     }
 
-    /**
-     * @expectedException \SAccounts\AccountsException
-     */
     public function testGetABalanceWithInvalidAccountTypeWillThrowException()
     {
         $ac = new AccountType(AccountType::DUMMY);
-        $ac->balance(new IntType(0), new IntType(0));
+        $this->expectException(AccountsException::class);
+        $ac->balance(0, 0);
     }
 
 

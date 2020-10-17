@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Accounting V3
  *
@@ -8,8 +9,6 @@
  */
 namespace SAccounts;
 
-use Chippyash\Type\Number\IntType;
-use Chippyash\Type\String\StringType;
 
 /**
  * An Account
@@ -34,21 +33,21 @@ class Account
     /**
      * Account Name
      *
-     * @var StringType
+     * @var string
      */
     protected $name;
 
     /**
      * Account debit amount
      *
-     * @var IntType
+     * @var int
      */
 	protected $acDr;
 
     /**
      * Account credit amount
      *
-     * @var IntType
+     * @var int
      */
 	protected $acCr;
 
@@ -57,16 +56,16 @@ class Account
      *
      * @param Nominal           $nominal
      * @param AccountType       $type
-     * @param StringType        $name
-     * @param IntType           $dr
-     * @param IntType           $cr
+     * @param string        $name
+     * @param int           $dr
+     * @param int           $cr
      */
     public function __construct(
         Nominal $nominal,
         AccountType $type,
-        StringType $name,
-        IntType $dr,
-        IntType $cr
+        string $name,
+        int $dr,
+        int $cr
     ) {
         $this->nominal = $nominal;
         $this->type= $type;
@@ -78,7 +77,7 @@ class Account
     /**
      * Return current debit amount
      *
-     * @return IntType
+     * @return int
      */
     public function dr()
     {
@@ -88,7 +87,7 @@ class Account
     /**
      * Return current credit amount
      *
-     * @return IntType
+     * @return int
      */
     public function cr()
     {
@@ -100,7 +99,7 @@ class Account
      *
      * Returns the current account balance.
      *
-     * @return IntType
+     * @return int
      *
      * @throws AccountsException
      */
@@ -131,7 +130,7 @@ class Account
     /**
      * Return account name
      *
-     * @return StringType
+     * @return string
      */
     public function getName()
     {

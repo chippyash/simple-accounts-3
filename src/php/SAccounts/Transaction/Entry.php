@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -8,7 +9,6 @@
  */
 namespace SAccounts\Transaction;
 
-use Chippyash\Type\Number\IntType;
 use Monad\FTry;
 use Monad\Match;
 use SAccounts\AccountsException;
@@ -31,7 +31,7 @@ class Entry
     protected $entryId;
 
     /**
-     * @var IntType
+     * @var int
      */
     protected $amount;
 
@@ -42,12 +42,12 @@ class Entry
 
     /**
      * @param Nominal $entryId
-     * @param IntType $amount
+     * @param int $amount
      * @param AccountType $type
      *
      * @throws AccountsException
      */
-    public function __construct(Nominal $entryId, IntType $amount, AccountType $type)
+    public function __construct(Nominal $entryId, int $amount, AccountType $type)
     {
         $this->entryId = $entryId;
         $this->amount = $amount;
@@ -59,15 +59,15 @@ class Entry
     /**
      * @return Nominal
      */
-    public function getId()
+    public function getId(): Nominal
     {
         return $this->entryId;
     }
 
     /**
-     * @return IntType
+     * @return int
      */
-    public function getAmount()
+    public function getAmount(): int
     {
         return $this->amount;
     }
@@ -75,7 +75,7 @@ class Entry
     /**
      * @return AccountType
      */
-    public function getType()
+    public function getType(): AccountType
     {
         return $this->type;
     }
@@ -84,7 +84,7 @@ class Entry
      * @param AccountType $type
      * @return FTry
      */
-    protected function checkType(AccountType $type)
+    protected function checkType(AccountType $type): FTry
     {
         return Match::on($type->getValue())
             ->test(AccountType::CR, function () {

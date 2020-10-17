@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -8,35 +9,36 @@
  */
 namespace Test\SAccounts\Transaction;
 
+use SAccounts\AccountsException;
 use SAccounts\AccountType;
 use SAccounts\Nominal;
 use SAccounts\Transaction\Entry;
-use Chippyash\Type\Number\IntType;
+
 
 class EntryTest extends \PHPUnit_Framework_TestCase
 {
     public function testAnEntryRequiresAnIdAnAmountAndAType()
     {
-        $sut = new Entry(new Nominal('9999'), new IntType(0), AccountType::CR());
-        $this->assertInstanceOf('SAccounts\Transaction\Entry', $sut);
+        $sut = new Entry(new Nominal('9999'), 0, AccountType::CR());
+        $this->assertInstanceOf(Entry::class, $sut);
     }
 
     public function testAnEntryMustHaveCrOrDrType()
     {
-        $sut = new Entry(new Nominal('9999'), new IntType(0), AccountType::CR());
-        $this->assertInstanceOf('SAccounts\Transaction\Entry', $sut);
-        $sut = new Entry(new Nominal('9999'), new IntType(0), AccountType::DR());
-        $this->assertInstanceOf('SAccounts\Transaction\Entry', $sut);
+        $sut = new Entry(new Nominal('9999'), 0, AccountType::CR());
+        $this->assertInstanceOf(Entry::class, $sut);
+        $sut = new Entry(new Nominal('9999'), 0, AccountType::DR());
+        $this->assertInstanceOf(Entry::class, $sut);
     }
 
     /**
      * @dataProvider invalidAccountTypes
-     * @expectedException \SAccounts\AccountsException
      * @param AccountType $type
      */
     public function testConstructingAnEntryWithInvalidTypeWillThrowException($type)
     {
-        $sut = new Entry(new Nominal('9999'), new IntType(0), $type);
+        $this->expectException(AccountsException::class);
+        $sut = new Entry(new Nominal('9999'), 0, $type);
     }
 
     public function invalidAccountTypes()
@@ -58,7 +60,7 @@ class EntryTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             '9999',
-            (new Entry(new Nominal('9999'), new IntType(0), AccountType::CR()))
+            (new Entry(new Nominal('9999'), 0, AccountType::CR()))
                 ->getId()
                 ->get()
         );
@@ -68,9 +70,8 @@ class EntryTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             100,
-            (new Entry(new Nominal('9999'), new IntType(100), AccountType::CR()))
+            (new Entry(new Nominal('9999'), 100, AccountType::CR()))
                 ->getAmount()
-                ->get()
         );
     }
 
@@ -78,7 +79,7 @@ class EntryTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertEquals(
             AccountType::CR(),
-            (new Entry(new Nominal('9999'), new IntType(1), AccountType::CR()))
+            (new Entry(new Nominal('9999'), 1, AccountType::CR()))
                 ->getType()
         );
     }

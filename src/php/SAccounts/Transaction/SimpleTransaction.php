@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -8,10 +9,9 @@
  */
 namespace SAccounts\Transaction;
 
-use Chippyash\Type\Number\IntType;
 use SAccounts\AccountType;
 use SAccounts\Nominal;
-use Chippyash\Type\String\StringType;
+
 
 /**
  * Simple two entry balanced transaction
@@ -26,18 +26,18 @@ class SimpleTransaction extends SplitTransaction
      *
      * @param Nominal $drAc Account to debit
      * @param Nominal $crAc Account to credit
-     * @param IntType $amount Transaction amount
-     * @param StringType $note Defaults to '' if not set
-     * @param IntType $ref Defaults to 0 if not set
+     * @param int $amount Transaction amount
+     * @param string $note Defaults to '' if not set
+     * @param int $ref Defaults to 0 if not set
      * @param \DateTime $date Defaults to today if not set
      */
     public function __construct(
         Nominal $drAc,
         Nominal $crAc,
-        IntType $amount,
-        StringType $note = null,
-        StringType $src = null,
-        IntType $ref = null,
+        int $amount,
+        string $note = null,
+        string $src = null,
+        int $ref = null,
         \DateTime $date = null
     ) {
         parent::__construct($note, $src, $ref, $date);

@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 /**
  * Simple Double Entry Accounting V3
  *
@@ -9,8 +10,6 @@
 
 namespace SAccounts;
 
-use Chippyash\Type\Number\IntType;
-use Chippyash\Type\String\StringType;
 use Chippyash\Identity\Identifying;
 use Chippyash\Identity\Identifiable;
 use Monad\FTry;
@@ -39,21 +38,21 @@ class Chart implements Identifiable
 
     /**
      * Name of this chart
-     * @var StringType
+     * @var string
      */
     protected $chartName;
 
     /**
      * Constructor
      *
-     * @param StringType $name Chart Name
+     * @param string $name Chart Name
      * @param Node $tree Tree of accounts
-     * @param IntType|null $internalId default == 0
+     * @param int|null $internalId default == 0
      */
     public function __construct(
-        StringType $name,
+        string $name,
         Node $tree = null,
-        IntType $internalId = null
+        int $internalId = null
     ) {
         $this->chartName = $name;
         $this->tree = Match::on($tree)
@@ -101,11 +100,12 @@ class Chart implements Identifiable
      * Get Nominal of parent for an account
      *
      * @param Nominal $nId
+     *
      * @return null|Nominal
      *
      * @throws AccountsException
      */
-    public function getParentId(Nominal $nId)
+    public function getParentId(Nominal $nId): ?Nominal
     {
         return Match::on(
             Match::on($this->tryGetNode($nId, self::ERR_INVALAC))
@@ -129,7 +129,7 @@ class Chart implements Identifiable
      *
      * @return Node
      */
-    public function getTree()
+    public function getTree(): Node
     {
         return $this->tree;
     }
@@ -137,9 +137,9 @@ class Chart implements Identifiable
     /**
      * Return chart name
      *
-     * @return StringType
+     * @return string
      */
-    public function getName()
+    public function getName(): string
     {
         return $this->chartName;
     }
@@ -151,7 +151,7 @@ class Chart implements Identifiable
      *
      * @return $this
      */
-    public function setRootNode(Node $root)
+    public function setRootNode(Node $root): Chart
     {
         $this->tree = $root;
 
@@ -164,7 +164,7 @@ class Chart implements Identifiable
      *
      * @return FTry
      */
-    protected function tryGetNode(Nominal $nId, $exceptionMessage)
+    protected function tryGetNode(Nominal $nId, $exceptionMessage): FTry
     {
         return FTry::with(function () use ($nId, $exceptionMessage) {
             $node = $this->findNode($nId);
@@ -179,9 +179,9 @@ class Chart implements Identifiable
      * Find an account node using its nominal code
      *
      * @param Nominal $nId
-     * @return node|null
+     * @return Node|null
      */
-    protected function findNode(Nominal $nId)
+    protected function findNode(Nominal $nId): ?Node
     {
         return $this->tree->accept(new NodeFinder($nId));
     }
