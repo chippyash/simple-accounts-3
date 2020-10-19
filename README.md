@@ -639,3 +639,5 @@ V1.4.0 Change of license from GPL V3 to BSD 3 Clause
 V1.4.1 Fix issue 1
 
 V2.0.0 BC Break. PHP<7.2 support withdrawn. Remove dependency on chippyash/strongtype.
+
+V2.0.1 Remove dependency on chippyash/identity

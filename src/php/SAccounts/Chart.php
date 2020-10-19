@@ -12,8 +12,6 @@ declare(strict_types=1);
 
 namespace SAccounts;
 
-use Chippyash\Identity\Identifiable;
-use Chippyash\Identity\Identifying;
 use Monad\FTry;
 use Monad\Match;
 use SAccounts\Visitor\NodeFinder;
@@ -22,9 +20,12 @@ use Tree\Node\Node;
 /**
  * A Chart of Accounts
  */
-class Chart implements Identifiable
+class Chart
 {
-    use Identifying;
+    /**
+     * @var int
+     */
+    protected $id;
 
     /**@+
      * Exception error messages
@@ -61,7 +62,7 @@ class Chart implements Identifiable
             ->Tree_Node_Node($tree)
             ->null(new Node())
             ->value();
-        $this->id = $internalId;
+        $this->id = (int) $internalId;
     }
 
     /**
@@ -158,6 +159,16 @@ class Chart implements Identifiable
         $this->tree = $root;
 
         return $this;
+    }
+
+    /**
+     * Return the chart id
+     *
+     * @return int
+     */
+    public function id()
+    {
+        return $this->id;
     }
 
     /**
