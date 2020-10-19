@@ -22,7 +22,7 @@ use SAccounts\Transaction\SplitTransaction;
 use Zend\Db\Adapter\Adapter;
 
 
-class AccountantTest extends \PHPUnit_Framework_TestCase {
+class AccountantTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var Accountant
@@ -33,7 +33,7 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
      */
     protected $adapter;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $config = [
             'driver' => 'Pdo_mysql',
@@ -51,10 +51,7 @@ class AccountantTest extends \PHPUnit_Framework_TestCase {
 
     public function testAnAccountantCanCreateANewChartOfAccounts()
     {
-        $this->assertInternalType(
-            'int',
-            $this->createChart()
-        );
+        $this->assertIsInt($this->createChart());
     }
 
     public function testAnAccountantCanFetchAChart()

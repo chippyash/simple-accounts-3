@@ -2,17 +2,18 @@
 
 ## Quality Assurance
 
-![PHP 5.6](https://img.shields.io/badge/PHP-5.6-blue.svg)
-![PHP 7.0](https://img.shields.io/badge/PHP-7.0-blue.svg)
-![PHP 7.1](https://img.shields.io/badge/PHP-7.1-blue.svg)
+
 ![PHP 7.2](https://img.shields.io/badge/PHP-7.2-blue.svg)
+![PHP 7.3](https://img.shields.io/badge/PHP-7.3-blue.svg)
+![PHP 7.4](https://img.shields.io/badge/PHP-7.4-blue.svg)
 ![MariaDb 10.0](https://img.shields.io/badge/MariaDb-10.0-blue.svg)
 ![MySql 5.6](https://img.shields.io/badge/MySql-5.6-blue.svg)
 [![Build Status](https://travis-ci.org/chippyash/simple-accounts-3.svg?branch=master)](https://travis-ci.org/chippyash/simple-accounts-3)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/5811a42ebda892357fba/test_coverage)](https://codeclimate.com/github/chippyash/simple-accounts-3/test_coverage)
 [![Maintainability](https://api.codeclimate.com/v1/badges/5811a42ebda892357fba/maintainability)](https://codeclimate.com/github/chippyash/simple-accounts-3/maintainability)
 
-
+- Please note that developer support for PHP<7.2 was withdrawn at V2 of this library
+- 
 ## What
 
 Provides a simple database backed general ledger accounting library that allows for a 
@@ -98,8 +99,10 @@ For MySql:
 to create the database components. NB - PHP Doctrine Migration users should read the
 PHP code basic section to utilise the supplied migrations.
 
-You can run SQL tests by executing `./sqltest.sh`.  Please be aware that this script is
-bound to db = test, uid = test, pwd = test. 
+You can run SQL tests by executing `./sqltest.sh test test test localhost`.
+
+- copy the `test/php/phpunit.xml` file to `test/php/local-phpunit.xml` and
+edit it to ensure that you have the correct database connection parameters
 
 You can run PHP tests by executing `./build.sh`. This also generates the test contract
 in the ./docs directory if you have the [TestDox-Converter](https://github.com/chippyash/Testdox-Converter)
@@ -257,13 +260,10 @@ any definitions in `src\xsd\chart-definition.xsd`.
 
 <pre>
 use SAccounts\ChartDefinition;
-use Chippyash\Type\String\StringType;
-use Chippyash\Type\Number\IntType;
 
-$definition = new ChartDefinition(new StringType('src/xml/personal.xml'));
+$definition = new ChartDefinition('src/xml/personal.xml');
 
-/* @var IntType $chartId */
-$chartId = $accountant->createChart(new StringType('Personal'), $definition);
+$chartId = $accountant->createChart('Personal', $definition);
 </pre>
 
 This will create the entries in the `sa_coa` table and return you the id of the
@@ -272,7 +272,7 @@ retrieve it later.
 
 The Accountant is now tied to that COA.  To use another COA you will
 need to create another Accountant.  To create the Accountant and tell it to use an
-existing COA, simply give the chart id (as an IntType) as the second parameter
+existing COA, simply give the chart id  as the second parameter
 when constructing the Accountant.
 
 Please note that you never have to explicitly save the COA.  It is done transactionally
@@ -321,8 +321,6 @@ All DR (debit) type accounts derive their balance as dr amount - cr amount.  All
 type accounts derive their baslance as cr amount - dr amount. REAL accounts derive their
 balance as abs(cr amount - dr amount), which is the same as abs(dr amount - cr amount)
 and should usually equal zero.
-
-    
 
 ##### Deleting an Account ledger from the COA
 
@@ -432,15 +430,15 @@ The basic Transaction type is the SplitTransaction:
     /**
      * Constructor
      *
-     * @param StringType $note Defaults to '' if not set
-     * @param StringType $src  user defined source of transaction
-     * @param IntType $ref user defined reference for transaction
+     * @param string $note Defaults to '' if not set
+     * @param string $src  user defined source of transaction
+     * @param int $ref user defined reference for transaction
      * @param \DateTime $date Defaults to today if not set
      */
     public function __construct(
-        StringType $note = null,
-        StringType $src = null,
-        IntType $ref = null,
+        string $note = null,
+        string $src = null,
+        int $ref = null,
         \DateTime $date = null
     )
 </pre>
@@ -474,19 +472,19 @@ SimpleTransaction, which is a child of SplitTransaction.
      *
      * @param Nominal $drAc Account to debit
      * @param Nominal $crAc Account to credit
-     * @param IntType $amount Transaction amount
-     * @param StringType $note Defaults to '' if not set
-     * @param IntType $ref Defaults to 0 if not set
+     * @param int $amount Transaction amount
+     * @param string $note Defaults to '' if not set
+     * @param int $ref Defaults to 0 if not set
      * @param \DateTime $date Defaults to today if not set
      */
     public function __construct(
         Nominal $drAc,
         Nominal $crAc,
-        IntType $amount,
-        StringType $note = null,
-        StringType $src = null,
-        IntType $ref = null,
-        \DateTime $date = null
+        int $amount,
+        ?string $note = null,
+        ?string $src = null,
+        ?int $ref = null,
+        ?\DateTime $date = null
     )
 </pre>
 
@@ -495,14 +493,13 @@ Thus:
 <pre>
 use SAccounts\Transaction\SimpleTransaction;
 
-$txn = new SimpleTransaction(new Nominal('0000'), new Nominal('1000'), new IntType(1226));
+$txn = new SimpleTransaction(new Nominal('0000'), new Nominal('1000'), 1226);
 </pre>
 
 Having created your transaction by whatever means, you can then add it to the accounts 
 with:
 
 <pre>
-/* @var IntType $txnId */
 $txnId = $accountant->writeTransaction($txn);
 </pre>
 
@@ -514,12 +511,12 @@ You retrieve a single transaction from the accounts with
 
 <pre>
 /* @var SplitTransaction $txn */
-$txn = $accountant->fetchTransaction(new IntType(102));
+$txn = $accountant->fetchTransaction(102);
 </pre>
 
 To retrieve all entries for an account ledger:
 <pre>
-/** @var Monad\Set $transactions */
+/** @var Ds\Set $transactions */
 $transactions = $accountant->fetchAccountJournals(new Nominal('2000'));
 </pre>
 
@@ -537,14 +534,13 @@ language API under the `src` directory
 My references here apply to the fact that I develop primarily in PHP.  If they don't 
 apply to your dev language of choice, ignore them.
 
-
 Finally, if in doubt, read the source code. It's well documented.  
 
 ## Further documentation
 
 [Test Contract](https://github.com/chippyash/simple-accounts-3/blob/master/docs/Test-Contract.md) in the docs directory.
 
-This library makes extensive use of the tried and tested [StrongType](https://github.com/chippyash/strong-type) library
+This library makes use of the Standard [PHP DS extension](https://www.php.net/manual/en/book.ds.php)
 
 It also employs a great deal of functional programming derived from the [Monad](https://github.com/chippyash/monad)
 and [Assembly](https://github.com/chippyash/Assembly-Builder) libraries. 
@@ -586,7 +582,7 @@ Install [Composer](https://getcomposer.org/)
 #### For production
 
 <pre>
-    "chippyash/simple-accounts-3": "~1.0"
+    "chippyash/simple-accounts-3": "~2.0"
 </pre>
  
 `composer install --no-dev`
@@ -601,24 +597,18 @@ Clone this repo, and then run Composer in local repo root to pull in dependencie
     composer update
 </pre>
 
-To run the tests:
+- copy the `test/php/phpunit.xml` file to `test/php/local-phpunit.xml` and
+edit it to ensure that you have the correct database connection parameters
 
-<pre>
-    cd simple-accounts
-    vendor/bin/phpunit -c test/phpunit.xml test/
-</pre>
+- To run the tests: `composer test:run`
+- To lint the code: `composer lint:run`
+- To fix lint issues: `composer lint:fix`
 
 ## License
 
 This software library is released under the [BSD 3 Clause license](https://opensource.org/licenses/BSD-3-Clause)
 
-This software library is Copyright (c) 2017-2018, Ashley Kitson, UK
-
-## Sponsors
-
-This library is supported by <a href="https://www.jetbrains.com"><img src="https://github.com/chippyash/Strong-Type/raw/master/img/JetBrains.png" alt="Jetbrains" style="height: 200px;vertical-align: middle;"></a>
-who provide their IDEs to Open Source developers.
-
+This software library is Copyright (c) 2017-2020, Ashley Kitson, UK
 
 ## History
 
@@ -647,3 +637,5 @@ V1.3.2 Remove ambiguity for treatment of real account balances
 V1.4.0 Change of license from GPL V3 to BSD 3 Clause 
 
 V1.4.1 Fix issue 1
+
+V2.0.0 BC Break. PHP<7.2 support withdrawn. Remove dependency on chippyash/strongtype.

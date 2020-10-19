@@ -15,7 +15,7 @@ use SAccounts\ChartDefinition;
 
 use org\bovigo\vfs\vfsStream;
 
-class ChartDefinitionTest extends \PHPUnit_Framework_TestCase {
+class ChartDefinitionTest extends \PHPUnit\Framework\TestCase {
 
     protected $sut;
 
@@ -26,7 +26,7 @@ class ChartDefinitionTest extends \PHPUnit_Framework_TestCase {
 <root><foo bar="2"/></root>
 EOT;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $root = vfsStream::setup();
         $file = vfsStream::newFile('test.xml')

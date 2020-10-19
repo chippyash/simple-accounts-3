@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -12,4 +14,6 @@ namespace SAccounts;
 /**
  * SAccounts Exception Class
  */
-class AccountsException extends \Exception {}
+class AccountsException extends \Exception
+{
+}

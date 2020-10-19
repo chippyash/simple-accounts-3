@@ -15,14 +15,14 @@ use Chippyash\Currency\Factory;
 use SAccounts\Nominal;
 use SAccounts\Transaction\SimpleTransaction;
 
-class SimpleTransactionTest extends \PHPUnit_Framework_TestCase
+class SimpleTransactionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var SimpleTransaction
      */
     protected $sut;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->sut = new SimpleTransaction(new Nominal('0000'), new Nominal('1000'), 1226);
     }
@@ -115,7 +115,7 @@ class SimpleTransactionTest extends \PHPUnit_Framework_TestCase
 
     public function testYouCanGetTheTransactionNote()
     {
-        $this->assertInternalType('string', $this->sut->getNote());
+        $this->assertIsString($this->sut->getNote());
     }
 
     public function testYouCanGetTheTransactionDatetime()

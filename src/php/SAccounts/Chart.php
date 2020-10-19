@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * Simple Double Entry Accounting V3
  *
@@ -10,12 +12,12 @@ declare(strict_types=1);
 
 namespace SAccounts;
 
-use Chippyash\Identity\Identifying;
 use Chippyash\Identity\Identifiable;
+use Chippyash\Identity\Identifying;
 use Monad\FTry;
 use Monad\Match;
-use Tree\Node\Node;
 use SAccounts\Visitor\NodeFinder;
+use Tree\Node\Node;
 
 /**
  * A Chart of Accounts
@@ -27,7 +29,7 @@ class Chart implements Identifiable
     /**@+
      * Exception error messages
      */
-    const ERR_INVALAC = 'Invalid account nominal identifier';
+    public const ERR_INVALAC = 'Invalid account nominal identifier';
     /**@-*/
 
     /**
@@ -51,8 +53,8 @@ class Chart implements Identifiable
      */
     public function __construct(
         string $name,
-        Node $tree = null,
-        int $internalId = null
+        ?Node $tree = null,
+        ?int $internalId = null
     ) {
         $this->chartName = $name;
         $this->tree = Match::on($tree)
@@ -88,7 +90,7 @@ class Chart implements Identifiable
      */
     public function hasAccount(Nominal $nId)
     {
-        return Match::on(FTry::with(function () use ($nId) {
+        return Match::on(FTry::with(function () use ($nId): void {
             $this->getAccount($nId);
         }))
             ->Monad_FTry_Success(true)

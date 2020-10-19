@@ -16,14 +16,14 @@ use SAccounts\Nominal;
 use SAccounts\Visitor\ChartArray;
 use Tree\Node\Node;
 
-class ChartArrayTest extends \PHPUnit_Framework_TestCase
+class ChartArrayTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Node
      */
     protected $tree;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->tree = new Node(
             new Account(

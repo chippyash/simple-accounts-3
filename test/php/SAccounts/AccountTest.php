@@ -15,7 +15,7 @@ use SAccounts\AccountsException;
 use SAccounts\AccountType;
 use SAccounts\Nominal;
 
-class AccountTest extends \PHPUnit_Framework_TestCase {
+class AccountTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var Account
@@ -67,7 +67,7 @@ class AccountTest extends \PHPUnit_Framework_TestCase {
             $dr,
             $cr
         );
-        $this->assertInternalType('int', $this->sut->getBalance());
+        $this->assertIsInt($this->sut->getBalance());
         $this->assertEquals(12, $this->sut->getBalance(), "wrong balance for: " . $acType->getKey());
     }
 

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -49,14 +51,14 @@ class Entries extends Collection
      */
     public function checkBalance(): bool
     {
-        $balance = $this->reduce(function($carry, Entry $entry) {
+        $balance = $this->reduce(
+            function ($carry, Entry $entry) {
             $amount = $entry->getAmount();
-            return (AccountType::DR()->equals($entry->getType()) ? $carry - $amount : $carry + $amount);
+            return AccountType::DR()->equals($entry->getType()) ? $carry - $amount : $carry + $amount;
         },
             0
         );
 
-        return ($balance == 0);
+        return $balance == 0;
     }
-
 }

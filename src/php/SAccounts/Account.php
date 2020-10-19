@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * Simple Double Entry Accounting V3
  *
@@ -8,7 +10,6 @@ declare(strict_types=1);
  * @license BSD-3-Clause See LICENSE.md
  */
 namespace SAccounts;
-
 
 /**
  * An Account
@@ -42,14 +43,14 @@ class Account
      *
      * @var int
      */
-	protected $acDr;
+    protected $acDr;
 
     /**
      * Account credit amount
      *
      * @var int
      */
-	protected $acCr;
+    protected $acCr;
 
     /**
      * Account constructor.
@@ -68,7 +69,7 @@ class Account
         int $cr
     ) {
         $this->nominal = $nominal;
-        $this->type= $type;
+        $this->type = $type;
         $this->name = $name;
         $this->acDr = $dr;
         $this->acCr = $cr;
@@ -103,7 +104,8 @@ class Account
      *
      * @throws AccountsException
      */
-    public function getBalance() {
+    public function getBalance()
+    {
         return $this->type->balance($this->acDr, $this->acCr);
     }
 

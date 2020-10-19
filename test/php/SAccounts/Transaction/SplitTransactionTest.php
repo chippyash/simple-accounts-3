@@ -15,14 +15,14 @@ use SAccounts\Nominal;
 use SAccounts\Transaction\Entry;
 use SAccounts\Transaction\SplitTransaction;
 
-class SplitTransactionTest extends \PHPUnit_Framework_TestCase
+class SplitTransactionTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var SplitTransaction
      */
     protected $sut;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $amount = 1226;
         $this->sut = (new SplitTransaction())
@@ -123,14 +123,14 @@ class SplitTransactionTest extends \PHPUnit_Framework_TestCase
     public function testGettingTheDebitAccountForASplitTransactionWillReturnAnArrayOfNominals()
     {
         $codes = $this->sut->getDrAc();
-        $this->assertInternalType('array', $codes);
+        $this->assertIsArray($codes);
         $this->assertInstanceOf(Nominal::class, $codes[0]);
     }
 
     public function testGettingTheCreditAccountForASplitTransactionWillReturnAnArrayOfNominals()
     {
         $codes = $this->sut->getCrAc();
-        $this->assertInternalType('array', $codes);
+        $this->assertIsArray($codes);
         $this->assertInstanceOf(Nominal::class, $codes[0]);
     }
 
@@ -160,7 +160,7 @@ class SplitTransactionTest extends \PHPUnit_Framework_TestCase
 
     public function testYouCanGetTheTransactionNote()
     {
-        $this->assertInternalType('string', $this->sut->getNote());
+        $this->assertIsString($this->sut->getNote());
     }
 
     public function testYouCanGetTheTransactionDatetime()

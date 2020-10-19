@@ -16,7 +16,7 @@ use SAccounts\Nominal;
 use Tree\Node\Node;
 use SAccounts\Visitor\ChartPrinter;
 
-class ChartPrinterTest extends \PHPUnit_Framework_TestCase
+class ChartPrinterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ChartPrinter
@@ -28,7 +28,7 @@ class ChartPrinterTest extends \PHPUnit_Framework_TestCase
      */
     protected $tree;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->tree = new Node(
             new Account(

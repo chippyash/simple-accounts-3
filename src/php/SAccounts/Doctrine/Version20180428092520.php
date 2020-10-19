@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -8,8 +11,8 @@
  */
 namespace SAccounts\Doctrine;
 
-use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Migrations\Version;
+use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
 /**
@@ -36,7 +39,7 @@ class Version20180428092520 extends AbstractMigration
     /**
      * @param Schema $schema
      */
-    public function up(Schema $schema)
+    public function up(Schema $schema): void
     {
         $this->createTables();
         $this->createProcs();
@@ -46,13 +49,13 @@ class Version20180428092520 extends AbstractMigration
     /**
      * @param Schema $schema
      */
-    public function down(Schema $schema)
+    public function down(Schema $schema): void
     {
         $this->dropProcs();
         $this->dropTables();
     }
 
-    protected function createTables()
+    protected function createTables(): void
     {
         $sql = file_get_contents($this->sqlSrcDir . '/build-tables.sql');
 
@@ -78,7 +81,7 @@ class Version20180428092520 extends AbstractMigration
         }
     }
 
-    protected function createProcs()
+    protected function createProcs(): void
     {
         $sql = file_get_contents($this->sqlSrcDir . '/build-procs.sql');
 
@@ -104,7 +107,7 @@ class Version20180428092520 extends AbstractMigration
         }
     }
 
-    protected function createTriggers()
+    protected function createTriggers(): void
     {
         $sql = file_get_contents($this->sqlSrcDir . '/build-triggers.sql');
 
@@ -123,7 +126,7 @@ class Version20180428092520 extends AbstractMigration
         }
     }
 
-    protected function dropProcs()
+    protected function dropProcs(): void
     {
         $sql = file_get_contents($this->sqlSrcDir . '/drop-procs.sql');
 
@@ -142,7 +145,7 @@ class Version20180428092520 extends AbstractMigration
         }
     }
 
-    protected function dropTables()
+    protected function dropTables(): void
     {
         $sql = file_get_contents($this->sqlSrcDir . '/drop-tables.sql');
 

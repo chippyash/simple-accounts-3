@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -23,7 +25,7 @@ class SplitTransaction
     /**
      * @var string
      */
-    const ERR1 = 'Entry not found';
+    public const ERR1 = 'Entry not found';
 
     /**
      * @var int
@@ -70,34 +72,34 @@ class SplitTransaction
         ?\DateTime $date = null
     ) {
         Match::on(Option::create($date))
-            ->Monad_Option_Some(function ($opt) {
+            ->Monad_Option_Some(function ($opt): void {
                 $this->date = $opt->value();
             })
-            ->Monad_Option_None(function () {
+            ->Monad_Option_None(function (): void {
                 $this->date = new \DateTime();
             });
 
         Match::on(Option::create($note))
-            ->Monad_Option_Some(function ($opt) {
+            ->Monad_Option_Some(function ($opt): void {
                 $this->note = $opt->value();
             })
-            ->Monad_Option_None(function () {
+            ->Monad_Option_None(function (): void {
                 $this->note = null;
             });
 
         Match::on(Option::create($src))
-            ->Monad_Option_Some(function ($opt) {
+            ->Monad_Option_Some(function ($opt): void {
                 $this->src = $opt->value();
             })
-            ->Monad_Option_None(function () {
+            ->Monad_Option_None(function (): void {
                 $this->src = null;
             });
 
         Match::on(Option::create($ref))
-            ->Monad_Option_Some(function ($opt) {
+            ->Monad_Option_Some(function ($opt): void {
                 $this->ref = $opt->value();
             })
-            ->Monad_Option_None(function () {
+            ->Monad_Option_None(function (): void {
                 $this->ref = null;
             });
 
@@ -196,8 +198,8 @@ class SplitTransaction
      */
     public function getEntry(Nominal $id): Entry
     {
-        $entries = array_values($this->entries->filter(function(Entry $entry) use ($id) {
-            return ($entry->getId()->get() === $id());
+        $entries = array_values($this->entries->filter(function (Entry $entry) use ($id) {
+            return $entry->getId()->get() === $id();
         })->toArray());
 
         if (count($entries) == 0) {
@@ -225,8 +227,9 @@ class SplitTransaction
                         $tot += $entry->getAmount();
                     }
                     return $tot / 2;
-                })
-            ->Monad_Option_None(function () {
+                }
+            )
+            ->Monad_Option_None(function (): void {
                 throw new AccountsException('No amount for unbalanced transaction');
             })
             ->value();
@@ -275,8 +278,7 @@ class SplitTransaction
      */
     public function isSimple()
     {
-        return (count($this->getDrAc()) == 1
-            && count($this->getCrAc()) == 1);
+        return count($this->getDrAc()) == 1
+            && count($this->getCrAc()) == 1;
     }
-
 }

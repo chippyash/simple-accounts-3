@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /**
  * Zend Framework (http://framework.zend.com/)
  *
@@ -26,7 +29,7 @@ abstract class ErrorHandler
      *
      * @var array
      */
-    protected static $stack = array();
+    protected static $stack = [];
 
     /**
      * Check if this error handler is active
@@ -55,10 +58,10 @@ abstract class ErrorHandler
      *
      * @return void
      */
-    public static function start($errorLevel = \E_WARNING)
+    public static function start($errorLevel = \E_WARNING): void
     {
         if (!static::$stack) {
-            set_error_handler(array(get_called_class(), 'addError'), $errorLevel);
+            set_error_handler([get_called_class(), 'addError'], $errorLevel);
         }
 
         static::$stack[] = null;
@@ -97,13 +100,13 @@ abstract class ErrorHandler
      *
      * @return void
      */
-    public static function clean()
+    public static function clean(): void
     {
         if (static::$stack) {
             restore_error_handler();
         }
 
-        static::$stack = array();
+        static::$stack = [];
     }
 
     /**
@@ -116,9 +119,9 @@ abstract class ErrorHandler
      *
      * @return void
      */
-    public static function addError($errno, $errstr = '', $errfile = '', $errline = 0)
+    public static function addError($errno, $errstr = '', $errfile = '', $errline = 0): void
     {
-        $stack = & static::$stack[count(static::$stack) - 1];
+        $stack = &static::$stack[count(static::$stack) - 1];
         $stack = new ErrorException($errstr, 0, $errno, $errfile, $errline, $stack);
     }
 }

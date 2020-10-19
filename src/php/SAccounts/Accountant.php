@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -9,14 +11,14 @@ declare(strict_types=1);
  */
 namespace SAccounts;
 
+use Assembler\FFor;
 use Ds\Set;
 use PDOException;
-use Zend\Db\Adapter\Adapter;
-use Assembler\FFor;
-use Tree\Node\Node;
-use SAccounts\Visitor\NodeSaver;
-use SAccounts\Transaction\SplitTransaction;
 use SAccounts\Transaction\Entry;
+use SAccounts\Transaction\SplitTransaction;
+use SAccounts\Visitor\NodeSaver;
+use Tree\Node\Node;
+use Zend\Db\Adapter\Adapter;
 use Zend\Db\Adapter\Driver\StatementInterface;
 use Zend\Db\Adapter\Exception\InvalidQueryException;
 use Zend\Db\Sql\Select;
@@ -30,11 +32,11 @@ class Accountant
     /**@+
      * Error strings
      */
-    const ERR1 = 'Chart id not set';
+    public const ERR1 = 'Chart id not set';
     /**@-*/
 
     /**
-     * @var Adapter 
+     * @var Adapter
      */
     protected $dbAdapter;
     /**
@@ -44,14 +46,14 @@ class Accountant
 
     /**
      * Accountant constructor.
-     * 
+     *
      * If $chartId is null, then Accountant can only create a new chart.  The
-     * new Chart will then be the Chart that is used by the Accountant. 
+     * new Chart will then be the Chart that is used by the Accountant.
      *
      * @param Adapter      $dbAdapter
      * @param int|null $chartId
      */
-    public function __construct(Adapter $dbAdapter, int $chartId = null)
+    public function __construct(Adapter $dbAdapter, ?int $chartId = null)
     {
         $this->dbAdapter = $dbAdapter;
         $this->chartId = $chartId;
@@ -77,7 +79,7 @@ class Accountant
             ->chart(function ($tree, $chartName) {
                 return new Chart($chartName, $tree);
             })
-            ->build(function ($root, $tree) {
+            ->build(function ($root, $tree): void {
                 $this->buildTreeFromXml($tree, $root, AccountType::toArray());
             })
             ->store(function (Chart $chart, Node $tree) {
@@ -102,12 +104,12 @@ class Accountant
         }
 
         return FFor::create(
-                [
+            [
                     'chartId' => $this->chartId,
                     'dbAdapter' => $this->dbAdapter
                 ]
-            )
-            ->accounts(function(int $chartId, Adapter $dbAdapter) {
+        )
+            ->accounts(function (int $chartId, Adapter $dbAdapter) {
                 return $dbAdapter
                     ->query(
                         "call sa_sp_get_tree('{$chartId}')",
@@ -115,15 +117,18 @@ class Accountant
                     )
                     ->toArray();
             })
-            ->chartName(function(int $chartId, Adapter $dbAdapter) {
+            ->chartName(function (int $chartId, Adapter $dbAdapter) {
                 return $dbAdapter->query(
-                        "select name from sa_coa where id = {$chartId}",
-                        Adapter::QUERY_MODE_EXECUTE)
+                    "select name from sa_coa where id = {$chartId}",
+                    Adapter::QUERY_MODE_EXECUTE
+                )
                     ->current()
                     ->offsetGet('name');
             })
-            ->rootAc(function($accounts) {return array_shift($accounts);})
-            ->root(function($rootAc, $accounts) {
+            ->rootAc(function ($accounts) {
+                return array_shift($accounts);
+            })
+            ->root(function ($rootAc, $accounts) {
                 $root = new Node(
                     new Account(
                         new Nominal($rootAc['nominal']),
@@ -135,14 +140,16 @@ class Accountant
                 );
 
                 return $this->buildTreeFromDb(
-                    $root, $accounts, $rootAc['destid']
+                    $root,
+                    $accounts,
+                    $rootAc['destid']
                 );
             })
-            ->chart(function(string $chartName, Node $root, int $chartId) {
+            ->chart(function (string $chartName, Node $root, int $chartId) {
                 return new Chart($chartName, $root, $chartId);
             })
             ->fyield('chart');
-        }
+    }
 
     /**
      * Write a Transaction to the Journal and update the Chart
@@ -153,7 +160,7 @@ class Accountant
      * @return int Transaction Id
      * @throws AccountsException
      */
-    public function writeTransaction(SplitTransaction $txn, \DateTime $dateTime = null): int
+    public function writeTransaction(SplitTransaction $txn, ?\DateTime $dateTime = null): int
     {
         if (is_null($this->chartId)) {
             throw new AccountsException(self::ERR1);
@@ -168,24 +175,24 @@ class Accountant
                 'chartId' => $this->chartId
             ]
         )
-            ->stmnt(function(Adapter $dbAdapter) {
+            ->stmnt(function (Adapter $dbAdapter) {
                 return $dbAdapter->query(
                     "select sa_fu_add_txn(?, ?, ?, ?, ?, ?, ?, ?) as txnId",
                     Adapter::QUERY_MODE_PREPARE
                 );
             })
-            ->write(function(StatementInterface $stmnt, $dateTime, SplitTransaction $txn, array $txns, int $chartId) {
+            ->write(function (StatementInterface $stmnt, $dateTime, SplitTransaction $txn, array $txns, int $chartId) {
                 return $stmnt->execute(
-                        [
+                    [
                             $this->chartId,
                             $txn->getNote(),
                             $dateTime,
                             is_null($txn->getSrc()) ? null : $txn->getSrc(),
-                            is_null($txn->getRef()) ? null: $txn->getRef(),
+                            is_null($txn->getRef()) ? null : $txn->getRef(),
                             implode(
                                 ',',
                                 array_map(
-                                    function(Entry $entry) {
+                                    function (Entry $entry) {
                                         return $entry->getId()->get();
                                     },
                                     $txns
@@ -194,7 +201,7 @@ class Accountant
                             implode(
                                 ',',
                                 array_map(
-                                    function(Entry $entry) {
+                                    function (Entry $entry) {
                                         return $entry->getAmount();
                                     },
                                     $txns
@@ -203,17 +210,17 @@ class Accountant
                             implode(
                                 ',',
                                 array_map(
-                                    function(Entry $entry) {
+                                    function (Entry $entry) {
                                         return $entry->getType()->getKey();
                                     },
                                     $txns
                                 )
                             )
                         ]
-                    )->current()['txnId'];
+                )->current()['txnId'];
             })
             ->fyield('write');
-        }
+    }
 
     /**
      * Fetch a journal transaction identified by its journal id
@@ -230,18 +237,18 @@ class Accountant
                 'dbAdapter' => $this->dbAdapter
             ]
         )
-            ->journal(function(int $jrnId, Adapter $dbAdapter) {
+            ->journal(function (int $jrnId, Adapter $dbAdapter) {
                 $journal = $dbAdapter->query('select * from sa_journal where id = ?')
                     ->execute([$jrnId])
                     ->getResource()->fetchAll(\PDO::FETCH_ASSOC);
                 return array_pop($journal);
             })
-            ->entries(function(int $jrnId, Adapter $dbAdapter) {
+            ->entries(function (int $jrnId, Adapter $dbAdapter) {
                 return $dbAdapter->query('select * from sa_journal_entry where jrnId = ?')
                     ->execute([$jrnId])
                     ->getResource()->fetchAll(\PDO::FETCH_ASSOC);
             })
-            ->txn(function(array $journal, array $entries, int $jrnId) {
+            ->txn(function (array $journal, array $entries, int $jrnId) {
                 $txn = (new SplitTransaction(
                     $journal['note'],
                     $journal['src'],
@@ -283,8 +290,10 @@ class Accountant
                 'chartId' => $this->chartId
             ]
         )
-            ->sql(function(Adapter $dbAdapter) {return new Sql($dbAdapter);})
-            ->select(function(Sql $sql, Nominal $nominal, int $chartId) {
+            ->sql(function (Adapter $dbAdapter) {
+                return new Sql($dbAdapter);
+            })
+            ->select(function (Sql $sql, Nominal $nominal, int $chartId) {
                 return $sql->select(['j' => 'sa_journal'])
                     ->join(
                         ['e' => 'sa_journal_entry'],
@@ -299,13 +308,13 @@ class Accountant
                         ]
                     );
             })
-            ->entries(function(Adapter $dbAdapter, Sql $sql, Select $select) {
+            ->entries(function (Adapter $dbAdapter, Sql $sql, Select $select) {
                 return $dbAdapter->query($sql->buildSqlString($select))
                     ->execute()
                     ->getResource()
                     ->fetchAll(\PDO::FETCH_ASSOC);
             })
-            ->build(function(array $entries) {
+            ->build(function (array $entries) {
                 $transactions = [];
                 $jrnId = -1;
                 foreach ($entries as $entry) {
@@ -355,9 +364,8 @@ class Accountant
         Nominal $nominal,
         AccountType $type,
         string $name,
-        Nominal $prntNominal = null
-    ): Accountant
-    {
+        ?Nominal $prntNominal = null
+    ): Accountant {
         try {
             $this->dbAdapter->query('call sa_sp_add_ledger(?, ?, ?, ?, ?)')
                 ->execute(
@@ -448,10 +456,10 @@ class Accountant
      * @param \DOMNode $node
      * @param array $accountTypes
      */
-    protected function buildTreeFromXml(Node $tree, \DOMNode $node, array $accountTypes)
+    protected function buildTreeFromXml(Node $tree, \DOMNode $node, array $accountTypes): void
     {
         //create current node
-        list($nominal, $type, $name) = FFor::create(
+        [$nominal, $type, $name] = FFor::create(
             [
                 'attributes' => $node->attributes,
                 'accountTypes' => $accountTypes
@@ -498,7 +506,7 @@ class Accountant
                 'dbAdapter' => $this->dbAdapter
             ]
         )
-            ->chartId(function(Chart $chart, Adapter $dbAdapter) {
+            ->chartId(function (Chart $chart, Adapter $dbAdapter) {
                 $res = $dbAdapter->query(
                     "select sa_fu_add_chart('{$chart->getName()}')",
                     Adapter::QUERY_MODE_EXECUTE
@@ -508,7 +516,7 @@ class Accountant
 
                 return (int) \array_pop($res);
             })
-            ->build(function(Node $root, int $chartId, Adapter $dbAdapter) {
+            ->build(function (Node $root, int $chartId, Adapter $dbAdapter): void {
                 $root->accept(new NodeSaver($chartId, $this->dbAdapter));
             })
             ->fyield('chartId');

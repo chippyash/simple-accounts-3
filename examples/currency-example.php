@@ -68,7 +68,7 @@ $foodAc = new Nominal('6400');
 /** @var Currency $salary */
 $salary = Crcy::create($crcyCd, 4203.45);
 $accountant->writeTransaction(
-    new SimpleTransaction($bankAc, $salaryAc, $salary, new StringType('Jan salary')),
+    new SimpleTransaction($bankAc, $salaryAc, $salary->getValue(), new StringType('Jan salary')),
     new DateTime('2018-01-29')
 );
 echo "Pay salary of {$salary->display()} into Bank\n";
@@ -77,7 +77,7 @@ echo "Pay salary of {$salary->display()} into Bank\n";
 /** @var Currency $food */
 $food = Crcy::create($crcyCd, 120.16);
 $accountant->writeTransaction(
-    new SimpleTransaction($foodAc, $bankAc, $food, new StringType('weekly food shop')),
+    new SimpleTransaction($foodAc, $bankAc, $food->getValue(), new StringType('weekly food shop')),
     new DateTime('2018-01-29')
 );
 echo "Spend {$food->display()} on food\n";
@@ -86,7 +86,7 @@ echo "Spend {$food->display()} on food\n";
 /** @var Currency $savings */
 $savings = Crcy::create($crcyCd, 500);
 $accountant->writeTransaction(
-    new SimpleTransaction($savingsAc, $bankAc, $savings, new StringType('rainy day')),
+    new SimpleTransaction($savingsAc, $bankAc, $savings->getValue(), new StringType('rainy day')),
     new DateTime('2018-01-29')
 );
 echo "Save {$savings->display()} for a rainy day\n\n";

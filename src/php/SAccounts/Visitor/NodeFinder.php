@@ -1,18 +1,20 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * Simple Double Entry Accounting V3
- 
+
  * @author Ashley Kitson
  * @copyright Ashley Kitson, 2018, UK
  * @license BSD-3-Clause See LICENSE.md
  */
 namespace SAccounts\Visitor;
 
-use Tree\Visitor\Visitor;
-use Tree\Node\NodeInterface;
-use SAccounts\Nominal;
 use SAccounts\Account;
+use SAccounts\Nominal;
+use Tree\Node\NodeInterface;
+use Tree\Visitor\Visitor;
 
 /**
  * Find an account node in the chart tree

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -23,7 +25,7 @@ class Entry
     /**
      * Exception error message
      */
-    const ERR_NOTYPE = 'Account type must be DR or CR';
+    public const ERR_NOTYPE = 'Account type must be DR or CR';
 
     /**
      * @var Nominal

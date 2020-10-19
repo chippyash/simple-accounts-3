@@ -12,22 +12,22 @@ namespace Test\SAccounts;
 use SAccounts\AccountsException;
 use SAccounts\AccountType;
 
-class AccountTypeTest extends \PHPUnit_Framework_TestCase
+class AccountTypeTest extends \PHPUnit\Framework\TestCase
 {
     public function testCanGetValuesAsConstants()
     {
-        $this->assertInternalType('numeric', AccountType::REAL);
-        $this->assertInternalType('numeric', AccountType::DUMMY);
-        $this->assertInternalType('numeric', AccountType::CR);
-        $this->assertInternalType('numeric', AccountType::DR);
-        $this->assertInternalType('numeric', AccountType::ASSET);
-        $this->assertInternalType('numeric', AccountType::BANK);
-        $this->assertInternalType('numeric', AccountType::CUSTOMER);
-        $this->assertInternalType('numeric', AccountType::EXPENSE);
-        $this->assertInternalType('numeric', AccountType::INCOME);
-        $this->assertInternalType('numeric', AccountType::LIABILITY);
-        $this->assertInternalType('numeric', AccountType::EQUITY);
-        $this->assertInternalType('numeric', AccountType::SUPPLIER);
+        $this->assertIsNumeric(AccountType::REAL);
+        $this->assertIsNumeric(AccountType::DUMMY);
+        $this->assertIsNumeric(AccountType::CR);
+        $this->assertIsNumeric(AccountType::DR);
+        $this->assertIsNumeric(AccountType::ASSET);
+        $this->assertIsNumeric(AccountType::BANK);
+        $this->assertIsNumeric(AccountType::CUSTOMER);
+        $this->assertIsNumeric(AccountType::EXPENSE);
+        $this->assertIsNumeric(AccountType::INCOME);
+        $this->assertIsNumeric(AccountType::LIABILITY);
+        $this->assertIsNumeric(AccountType::EQUITY);
+        $this->assertIsNumeric(AccountType::SUPPLIER);
     }
 
     public function testCanGetValuesAsClassesUsingStaticMethods()

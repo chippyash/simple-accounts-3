@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -50,9 +52,9 @@ class ChartPrinter implements Visitor
         $ac = $node->getValue();
         $nominal = str_pad($ac->getNominal()->get(), 8);
         $name = str_pad($ac->getName(), 20);
-        $dr = str_pad($this->crcy->set($ac->dr())->display()->get(), 15, ' ', STR_PAD_LEFT);
-        $cr = str_pad($this->crcy->set($ac->cr())->display()->get(), 15, ' ', STR_PAD_LEFT);
-        $balStr = $this->crcy->set($ac->getBalance())->display()->get();
+        $dr = str_pad($this->crcy->setValue($ac->dr())->display(), 15, ' ', STR_PAD_LEFT);
+        $cr = str_pad($this->crcy->setValue($ac->cr())->display(), 15, ' ', STR_PAD_LEFT);
+        $balStr = $this->crcy->setValue($ac->getBalance())->display();
         $balance = str_pad($balStr, 15, ' ', STR_PAD_LEFT);
         echo "{$nominal}{$name}{$dr}{$cr}{$balance}\n";
 

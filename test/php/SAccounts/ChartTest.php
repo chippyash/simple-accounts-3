@@ -17,7 +17,7 @@ use SAccounts\Chart;
 use SAccounts\Nominal;
 use Tree\Node\Node;
 
-class ChartTest extends \PHPUnit_Framework_TestCase {
+class ChartTest extends \PHPUnit\Framework\TestCase {
 
     /**
      * @var Chart
@@ -29,7 +29,7 @@ class ChartTest extends \PHPUnit_Framework_TestCase {
      */
     protected $tree;
 
-    protected function setUp()
+    protected function setUp(): void
     {
         $tree = new Node(
             new Account(

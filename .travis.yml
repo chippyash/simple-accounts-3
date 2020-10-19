@@ -4,63 +4,46 @@ language: php
 before_install:
   - sudo apt-get update > /dev/null
   - composer self-update
-  - PHPVER=$(php -v | grep  -P --only-matching "\\d+\.\\d+" | head -n 1)
-  - if [[ "$DB" = "mariadb" && 5.6 = $PHPVER ]]; then curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter; fi;
-  - if [[ "$DB" = "mariadb" && 5.6 = $PHPVER ]]; then chmod +x ./cc-test-reporter; fi;
 
 before_script:
   - mkdir -p build/logs
   - composer install --no-interaction
   - if [[ "$DB" = "mariadb" ]]; then ./scripts/travis.install.mariadb.sh; fi;
   - if [[ "$DB" = "mysql" ]]; then ./scripts/travis.install.mysql.sh; fi;
-  - if [[ "$DB" = "mariadb" && 5.6 = $PHPVER ]]; then ./cc-test-reporter before-build; fi;
 
 script:
   - vendor/phpunit/phpunit/phpunit --configuration ./phpunit.travis.xml test/php
 
-after_success:
-  - if [ "$DB" = "mariadb" && 5.6 = $PHPVER ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi;
-
 jobs:
   include:
     - stage: Test
-      php: 5.6
-      env: DB=mariadb
-      addons:
-        mariadb: 10.0
-
-    - stage: Test
-      php: 7.0
-      env: DB=mariadb
-      addons:
-        mariadb: 10.0
-
-    - stage: Test
-      php: 7.1
-      env: DB=mariadb
-      addons:
-        mariadb: 10.0
-
-    - stage: Test
       php: 7.2
       env: DB=mariadb
       addons:
         mariadb: 10.0
 
     - stage: Test
-      php: 5.6
-      env: DB=mysql
+      php: 7.3
+      env: DB=mariadb
+      addons:
+        mariadb: 10.0
 
     - stage: Test
-      php: 7.0
-      env: DB=mysql
-
-    - stage: Test
-      php: 7.1
-      env: DB=mysql
+      php: 7.4
+      env: DB=mariadb
+      addons:
+        mariadb: 10.0
 
     - stage: Test
       php: 7.2
+      env: DB=mysql
+
+    - stage: Test
+      php: 7.3
+      env: DB=mysql
+
+    - stage: Test
+      php: 7.4
       env: DB=mysql
 
 

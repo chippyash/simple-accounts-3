@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -9,7 +11,6 @@ declare(strict_types=1);
  */
 namespace SAccounts;
 
-use Doctrine\DBAL\Driver\PDOException;
 use Zend\Db\Adapter\Exception\InvalidQueryException;
 
 /**
@@ -23,7 +24,9 @@ class DbException extends AccountsException
         $matches = [];
         if ($previous instanceof InvalidQueryException) {
             preg_match(
-                '/.*45000 - (?P<code>\d+) - (?P<err>[\w, ]+)\)/', $errMsg, $matches
+                '/.*45000 - (?P<code>\d+) - (?P<err>[\w, ]+)\)/',
+                $errMsg,
+                $matches
             );
         }
         if ($previous instanceof \PDOException) {

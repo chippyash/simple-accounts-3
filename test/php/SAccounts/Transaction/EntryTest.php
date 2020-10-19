@@ -15,7 +15,7 @@ use SAccounts\Nominal;
 use SAccounts\Transaction\Entry;
 
 
-class EntryTest extends \PHPUnit_Framework_TestCase
+class EntryTest extends \PHPUnit\Framework\TestCase
 {
     public function testAnEntryRequiresAnIdAnAmountAndAType()
     {

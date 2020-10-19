@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -11,7 +13,6 @@ namespace SAccounts\Transaction;
 
 use SAccounts\AccountType;
 use SAccounts\Nominal;
-
 
 /**
  * Simple two entry balanced transaction
@@ -35,10 +36,10 @@ class SimpleTransaction extends SplitTransaction
         Nominal $drAc,
         Nominal $crAc,
         int $amount,
-        string $note = null,
-        string $src = null,
-        int $ref = null,
-        \DateTime $date = null
+        ?string $note = null,
+        ?string $src = null,
+        ?int $ref = null,
+        ?\DateTime $date = null
     ) {
         parent::__construct($note, $src, $ref, $date);
         $this->addEntry(new Entry($drAc, $amount, AccountType::DR()));

@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -43,7 +45,7 @@ class ChartDefinition
     public function getDefinition(): \DOMDocument
     {
         $err = '';
-        set_error_handler(function($number, $error) use (&$err) {
+        set_error_handler(function ($number, $error) use (&$err): void {
             $err = $error;
             if (preg_match('/^DOMDocument::load\(\): (.+)$/', $error, $m) === 1) {
                 throw new AccountsException($m[1]);
@@ -52,7 +54,7 @@ class ChartDefinition
         $dom = new \DOMDocument();
         $dom->load($this->xmlFileName);
 
-        if (!$dom->schemaValidate(dirname(dirname(__DIR__)) .'/xsd/chart-definition.xsd')) {
+        if (!$dom->schemaValidate(dirname(dirname(__DIR__)) . '/xsd/chart-definition.xsd')) {
             throw new AccountsException('Definition does not validate: ' . $err);
         }
 

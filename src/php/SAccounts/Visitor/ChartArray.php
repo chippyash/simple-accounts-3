@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 /**
  * Simple Double Entry Bookkeeping V3
  *
@@ -11,8 +13,6 @@ namespace SAccounts\Visitor;
 
 use Assembler\FFor;
 use Chippyash\Currency\Currency;
-use SAccounts\Account;
-use SAccounts\AccountType;
 use Tree\Node\NodeInterface;
 use Tree\Visitor\Visitor;
 
@@ -36,9 +36,9 @@ class ChartArray implements Visitor
      * @param Currency|null $crcy If set, use Currency precision to return values
      *                            as float, else return values as integers
      */
-    public function __construct(Currency $crcy = null)
+    public function __construct(?Currency $crcy = null)
     {
-        $this->crcy = !is_null($crcy) ? $crcy : new Currency(0,'','',0);
+        $this->crcy = !is_null($crcy) ? $crcy : new Currency(0, '', '', 0);
         $this->asInt = is_null($crcy);
     }
 
@@ -54,22 +54,22 @@ class ChartArray implements Visitor
              'node' => $node,
              'ac' => $node->getValue()
             ])
-            ->dr(function($ac){
+            ->dr(function ($ac) {
                 return $this->asInt
                     ? $ac->dr()
-                    : $this->crcy->set($ac->dr())->getAsFloat();
+                    : $this->crcy->setValue($ac->dr())->getAsFloat();
             })
-            ->cr(function($ac){
+            ->cr(function ($ac) {
                 return $this->asInt
                     ? $ac->cr()
-                    : $this->crcy->set($ac->cr())->getAsFloat();
+                    : $this->crcy->setValue($ac->cr())->getAsFloat();
             })
-            ->balance(function($ac){
+            ->balance(function ($ac) {
                 return $this->asInt
                     ? $ac->getBalance()
-                    : $this->crcy->set($ac->getBalance())->getAsFloat();
+                    : $this->crcy->setValue($ac->getBalance())->getAsFloat();
             })
-            ->loop(function($dr, $cr, $balance, $ac, $node, $ret) {
+            ->loop(function ($dr, $cr, $balance, $ac, $node, $ret) {
                 $ret[] = [
                     $ac->getNominal()->get(),
                     $ac->getName(),

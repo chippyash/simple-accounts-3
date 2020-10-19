@@ -15,7 +15,7 @@ use SAccounts\Transaction\Entries;
 use SAccounts\Transaction\Entry;
 
 
-class EntriesTest extends \PHPUnit_Framework_TestCase
+class EntriesTest extends \PHPUnit\Framework\TestCase
 {
     public function testYouCanCreateAnEmptyEntriesCollection()
     {
