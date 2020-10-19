@@ -3,6 +3,7 @@ language: php
 
 before_install:
   - sudo apt-get update > /dev/null
+  - pecl install ds
   - composer self-update
 
 before_script:
