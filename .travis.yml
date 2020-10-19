@@ -23,29 +23,29 @@ jobs:
       addons:
         mariadb: 10.0
 
-    - stage: Test
-      php: 7.3
-      env: DB=mariadb
-      addons:
-        mariadb: 10.0
-
-    - stage: Test
-      php: 7.4
-      env: DB=mariadb
-      addons:
-        mariadb: 10.0
-
-    - stage: Test
-      php: 7.2
-      env: DB=mysql
-
-    - stage: Test
-      php: 7.3
-      env: DB=mysql
-
-    - stage: Test
-      php: 7.4
-      env: DB=mysql
+#    - stage: Test
+#      php: 7.3
+#      env: DB=mariadb
+#      addons:
+#        mariadb: 10.0
+#
+#    - stage: Test
+#      php: 7.4
+#      env: DB=mariadb
+#      addons:
+#        mariadb: 10.0
+#
+#    - stage: Test
+#      php: 7.2
+#      env: DB=mysql
+#
+#    - stage: Test
+#      php: 7.3
+#      env: DB=mysql
+#
+#    - stage: Test
+#      php: 7.4
+#      env: DB=mysql
 
 
 # configure notifications (email, IRC, campfire etc)
